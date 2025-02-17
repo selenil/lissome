@@ -29,6 +29,8 @@ defmodule Lissome.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:esbuild, "~> 0.9"},
+
       # gleam dependencies
       {:gleam_stdlib, "~> 0.34 or ~> 1.0"},
       {:gleeunit, "~> 1.0", only: [:dev, :test], runtime: false},
