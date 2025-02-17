@@ -42,21 +42,21 @@ defmodule Mix.Tasks.Compile.GleamJs do
 
     case OptionParser.parse(args, switches: @switches) do
       {options, _, _} ->
-        config = Keyword.merge(options, Mix.Project.config())
-
-        app =
-          try do
-            Keyword.get_lazy(config, :app, fn -> elem(config[:lock], 1) end)
-          rescue
-            _ -> raise MixGleam.Error, message: "Unable to find app name"
-          end
-
-        build_dir = Path.join([Mix.Project.build_path(), "lib", "#{app}"])
-
         gleam? =
           File.exists?("src") and Enum.any?(File.ls!("src"), &String.ends_with?(&1, ".gleam"))
 
         if gleam? do
+          config = Keyword.merge(options, Mix.Project.config())
+
+          app =
+            try do
+              Keyword.get_lazy(config, :app, fn -> elem(config[:lock], 1) end)
+            rescue
+              _ -> raise MixGleam.Error, message: "Unable to find app name"
+            end
+
+          build_dir = Path.join([Mix.Project.build_path(), "lib", "#{app}"])
+
           compiled_files = compile(app, build_dir)
 
           bundle(compiled_files, config, app, build_dir)
