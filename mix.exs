@@ -54,6 +54,7 @@ defmodule Lissome.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.0.0"},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
 
       # gleam dependencies
       {:gleam_stdlib, "~> 0.34 or ~> 1.0"},
