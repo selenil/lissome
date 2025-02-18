@@ -58,7 +58,7 @@ defmodule Mix.Tasks.Compile.GleamJs do
 
           compiled_files = compile(app, app_build_dir)
 
-          bundle(compiled_files, config, app, app_build_dir)
+          bundle(compiled_files, config, app_build_dir)
         end
     end
 
@@ -119,7 +119,7 @@ defmodule Mix.Tasks.Compile.GleamJs do
     end
   end
 
-  defp bundle(compiled_files, config, app, app_build_dir) do
+  defp bundle(compiled_files, config, app_build_dir) do
     out = Path.join(app_build_dir, "priv/static/gleam")
 
     File.mkdir_p!(out)
