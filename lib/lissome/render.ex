@@ -1,6 +1,11 @@
 defmodule Lissome.Render do
   alias Lissome.Utils
 
+  @doc """
+  Renders a lustre app in server side.
+
+  This function will call the `init_fn` function to get the initial model and then the `view_fn` function to get the initial view.
+  """
   def ssr_lustre(module_name, init_fn, view_fn, target_id, flags) do
     model =
       module_name
@@ -16,6 +21,11 @@ defmodule Lissome.Render do
     |> script_tags(module_name, model)
   end
 
+  @doc """
+  Renders a lustre app in client side.
+
+  This function just renders the root container and the script tags necessary to mount the app.
+  """
   def render_lustre(module_name, target_id, flags) do
     module_name
     |> wrap_in_container(target_id)
