@@ -19,8 +19,8 @@ defmodule Lissome.Component do
     doc: "Initial values to pass to the Gleam module",
     examples: [
       %{
-        "name" => "John",
-        "age" => 30
+        name: "John",
+        age: 30
       }
     ]
   )
