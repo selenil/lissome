@@ -9,11 +9,11 @@ defmodule Lissome.Render do
   def ssr_lustre(module_name, init_fn, view_fn, target_id, flags) do
     model =
       module_name
-      |> apply(init_fn, [{:flags, flags}])
+      |> apply(String.to_atom(init_fn), [{:flags, flags}])
       |> elem(1)
 
     view =
-      apply(module_name, view_fn, [{:model, model}])
+      apply(module_name, String.to_atom(view_fn), [{:model, model}])
 
     view
     |> wrap_in_container(target_id)

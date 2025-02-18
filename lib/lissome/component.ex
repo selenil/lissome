@@ -27,15 +27,15 @@ defmodule Lissome.Component do
 
   attr(
     :init_fn,
-    :atom,
-    default: :init,
+    :string,
+    default: "init",
     doc: "the name of your Gleam function that initializes the model"
   )
 
   attr(
     :view_fn,
-    :atom,
-    default: :view,
+    :string,
+    default: "view",
     doc: "the name of your Gleam function that renders the view"
   )
 
