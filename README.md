@@ -11,9 +11,16 @@ First, make sure you have the Gleam compiler installed. Instructions can be foun
 
 1. We will use a tool called `mix_gleam` to manage a Gleam project with Mix. Follow the [instructions](https://github.com/gleam-lang/mix_gleam?tab=readme-ov-file#installation) to setup it.
 
-2. Add `lissome` to your `mix.exs` file:
+2. Add `lissome` to your `mix.exs` file and the `gleam_js` compiler to your list of compilers:
 
 ```elixir
+def project do
+  [
+    ...,
+    compilers: [:gleam, :gleam_js] ++ Mix.compilers(),
+  ]
+end
+
 def deps do
   [
     ...,
