@@ -17,7 +17,7 @@ First, make sure you have the Gleam compiler installed. Instructions can be foun
 def deps do
   [
     ...,
-    {:lissome, "~> 0.1.0"},
+    {:lissome, "~> 0.2.0"},
   ]
 end
 ```
