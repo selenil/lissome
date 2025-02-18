@@ -13,10 +13,10 @@ defmodule Lissome.Render do
       |> elem(1)
 
     view =
-      apply(module_name, String.to_atom(view_fn), [{:model, model}])
+      apply(module_name, String.to_atom(view_fn), [model_to_tuple(model)])
 
-    view
-    |> wrap_in_container(target_id)
+    target_id
+    |> wrap_in_container([view])
     |> lustre_to_string()
     |> script_tags(module_name, model)
   end
@@ -27,19 +27,26 @@ defmodule Lissome.Render do
   This function just renders the root container and the script tags necessary to mount the app.
   """
   def render_lustre(module_name, target_id, flags) do
-    module_name
-    |> wrap_in_container(target_id)
+    target_id
+    |> wrap_in_container()
     |> lustre_to_string()
     |> script_tags(module_name, flags)
   end
 
-  defp wrap_in_container(lustre_html, target_id) do
+  defp model_to_tuple(model) when is_map(model) do
+    model
+    |> Map.values()
+    |> List.to_tuple()
+    |> Tuple.insert_at(0, :model)
+  end
+
+  defp wrap_in_container(target_id, children \\ []) when is_list(children) do
     :lustre@element@html.div(
       [
         :lustre@attribute.id(target_id),
         :lustre@attribute.attribute("phx-update", "ignore")
       ],
-      [lustre_html]
+      children
     )
   end
 
