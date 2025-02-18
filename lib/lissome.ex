@@ -1,18 +1,5 @@
 defmodule Lissome do
   @moduledoc """
-  Documentation for `Lissome`.
+  Integration of Gleam's Lustre framework with Phoenix LiveView
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Lissome.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end
