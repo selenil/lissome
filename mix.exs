@@ -80,7 +80,7 @@ defmodule Lissome.MixProject do
         Changelog: @repo_url <> "/blob/main/CHANGELOG.md",
         GitHub: @repo_url
       },
-      files: ~w(lib mix.exs .formatter.exs LICENSE.md README.md CHANGELOG.md)
+      files: ~w(lib mix.exs .formatter.exs LICENSE README.md CHANGELOG.md)
     ]
   end
 end
