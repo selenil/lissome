@@ -120,16 +120,6 @@ Keep in mind that `Lissome` will call the `init` and the `view` functions of you
 />
 ```
 
-## Use cases
-
-In my experience, many part of the UI in Phoenix apps could be done with `Phoenix LiveView`; even for parts that are heavily interactive we have ways to build components like modals using JS commands and [perform optimistic updates](https://hexdocs.pm/phoenix_live_view/syncing-changes.html) by combining JS commands and Tailwind CSS classes.
-
-However, there are still parts of the UI that are very complex to implement in `Phoenix LiveView`, often because they have a non-trivial client-side state.
-
-In that situations, we could use Gleam and its fronted framework, Lustre, as they are well suited to handle that kind of state in a simple way. Also, Gleam has interopability with Elixir and both shares many concepts, such as immutability, functional paradigms and pattern matching.
-
-`Lissome` is designed to address *only* the gaps of `Phoenix LiveView` when it comes to client-side state.
-
 ## Roadmap
 
 - [ ] Improvements to the SSR.
