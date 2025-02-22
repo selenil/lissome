@@ -49,7 +49,7 @@ gleam deps download
 ```
 
 > [!NOTE]
-> Although `mix_gleam` is able to install Gleam dependencies, it doesn't manages dependencies well outside Erlang target. For that reason, we usea  `gleam.toml` file and the Gleam tooling to manage Gleam dependencies.
+> Although `mix_gleam` is able to install Gleam dependencies, it doesn't manages dependencies well outside Erlang target. For that reason, we use a `gleam.toml` file and the Gleam tooling to manage Gleam dependencies.
 
 ## Usage
 
