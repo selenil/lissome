@@ -51,10 +51,12 @@ defmodule Lissome.Render do
   end
 
   defp script_tags(html, module_name, flags) do
+    flags_json_tag_id = Application.get_env(:lissome, :flags_json_tag_id, "ls-model")
+
     html <>
       """
       <script type="module" src="gleam/#{module_name}.entry.mjs"></script>
-      <script type="application/json" id="ls-model">#{Utils.json(flags)}</script>
+      <script type="application/json" id="#{flags_json_tag_id}">#{Utils.json(flags)}</script>
       """
   end
 
