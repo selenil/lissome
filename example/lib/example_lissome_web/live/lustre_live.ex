@@ -24,7 +24,7 @@ defmodule ExampleLissomeWeb.LustreLive do
         </button>
 
         <div class="text-4xl font-bold text-gray-700 w-16 text-center">
-          <%= @count %>
+          {@count}
         </div>
 
         <button
@@ -41,12 +41,12 @@ defmodule ExampleLissomeWeb.LustreLive do
           @light_on && "bg-orange-400 text-gray-900",
           !@light_on && "bg-red-300 text-white"
         ]}>
-          <%= if @light_on, do: "ON", else: "OFF" %>
+          {if @light_on, do: "ON", else: "OFF"}
         </div>
 
         <button
           class="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-          phx-click="toggle_light"
+          phx-click="toggle-light"
         >
           Toggle light
         </button>
@@ -65,7 +65,7 @@ defmodule ExampleLissomeWeb.LustreLive do
     {:noreply, assign(socket, count: socket.assigns.count - 1)}
   end
 
-  def handle_event("toggle_light", _, socket) do
+  def handle_event("toggle-light", _, socket) do
     {:noreply, assign(socket, light_on: !socket.assigns.light_on)}
   end
 end

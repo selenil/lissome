@@ -37,7 +37,7 @@ pub fn view(model: Model) {
     [
       html.p(
         [attribute.class("text-3xl font-bold text-center text-gray-800 mb-8")],
-        [html.text("Gleam ")],
+        [html.text("Gleam")],
       ),
       html.div(
         [attribute.class("flex items-center justify-center gap-4 mb-8")],
@@ -127,7 +127,7 @@ fn parse_flags(json: String) {
 
 // We don't use `plinth` library here because
 // the compilation for Erlang will fail as `plinth`
-// doesn't support targets outside Erlang.
+// doesn't support the Erlang target.
 // Here we provide an Erlang implementation that just
 // panic as this function doesn't have sense outside Javascript
 // but this at least allows the compilation to succeed.

@@ -10,7 +10,7 @@ module.exports = {
     "./js/**/*.js",
     "../lib/example_lissome_web.ex",
     "../lib/example_lissome_web/**/*.*ex",
-    "../_build/dev/lib/example_lissome/priv/static/gleam/**/*.{js,mjs}",
+    "../src/**/*.gleam",
   ],
   theme: {
     extend: {
