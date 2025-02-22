@@ -18,7 +18,7 @@ defmodule Lissome.Render do
     target_id
     |> wrap_in_container([view])
     |> lustre_to_string()
-    |> script_tags(module_name, model)
+    |> script_tags(module_name, flags)
   end
 
   @doc """
@@ -50,11 +50,11 @@ defmodule Lissome.Render do
     )
   end
 
-  defp script_tags(html, module_name, model) do
+  defp script_tags(html, module_name, flags) do
     html <>
       """
       <script type="module" src="gleam/#{module_name}.entry.mjs"></script>
-      <script type="application/json" id="ls-model">#{Utils.json(model)}</script>
+      <script type="application/json" id="ls-model">#{Utils.json(flags)}</script>
       """
   end
 
