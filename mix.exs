@@ -1,25 +1,18 @@
 defmodule Lissome.MixProject do
   use Mix.Project
 
-  @app :lissome
   @version "0.2.0"
 
   @repo_url "https://github.com/selenil/lissome"
 
   def project do
     [
-      app: @app,
+      app: :lissome,
       name: "Lissome",
       version: @version,
       elixir: "~> 1.18",
-      archives: [mix_gleam: "~> 0.6"],
-      compilers: [:gleam] ++ Mix.compilers(),
-      erlc_paths: ["build/dev/erlang/#{@app}/_gleam_artefacts"],
-      erlc_include_path: "build/dev/erlang/#{@app}/include",
-      prune_code_paths: false,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases(),
 
       # Hex
       description: description(),
@@ -57,15 +50,7 @@ defmodule Lissome.MixProject do
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
 
       # gleam dependencies
-      {:gleam_stdlib, "~> 0.34 or ~> 1.0"},
-      {:gleeunit, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:lustre, "~> 4.6.3"}
-    ]
-  end
-
-  defp aliases do
-    [
-      "deps.get": ["deps.get", "gleam.deps.get"]
+      {:lustre, "~> 4.6.3", app: false, manager: :rebar3, override: true}
     ]
   end
 
