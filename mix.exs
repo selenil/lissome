@@ -75,7 +75,7 @@ defmodule Lissome.MixProject do
 
   defp package do
     [
-      maintainers: [""],
+      maintainers: ["selenil"],
       licenses: ["MIT"],
       links: %{
         Changelog: @repo_url <> "/blob/main/CHANGELOG.md",
