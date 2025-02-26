@@ -15,10 +15,13 @@ defmodule Lissome.Render do
     view =
       apply(module_name, String.to_atom(view_fn), [model_to_tuple(model)])
 
-    target_id
-    |> wrap_in_container([view])
+    flags_json_tag = flags_json_script_tag(flags)
+
+    module_base_name = module_base_name(module_name)
+
+    module_base_name
+    |> wrap_in_container(target_id, [view, flags_json_tag])
     |> lustre_to_string()
-    |> script_tags(module_name, flags)
   end
 
   @doc """
@@ -27,10 +30,13 @@ defmodule Lissome.Render do
   This function just renders the root container and the script tags necessary to mount the app.
   """
   def render_lustre(module_name, target_id, flags) do
-    target_id
-    |> wrap_in_container()
+    module_base_name = module_base_name(module_name)
+
+    flags_json_tag = flags_json_script_tag(flags)
+
+    module_base_name
+    |> wrap_in_container(target_id, [flags_json_tag])
     |> lustre_to_string()
-    |> script_tags(module_name, flags)
   end
 
   defp model_to_tuple(model) when is_map(model) do
@@ -40,24 +46,32 @@ defmodule Lissome.Render do
     |> Tuple.insert_at(0, :model)
   end
 
-  defp wrap_in_container(target_id, children \\ []) when is_list(children) do
+  defp wrap_in_container(module_name, target_id, children) when is_list(children) do
     :lustre@element@html.div(
       [
         :lustre@attribute.id(target_id),
+        :lustre@attribute.attribute("data-name", module_name),
+        :lustre@attribute.attribute("phx-hook", "LissomeHook"),
         :lustre@attribute.attribute("phx-update", "ignore")
       ],
       children
     )
   end
 
-  defp script_tags(html, module_name, flags) do
+  defp flags_json_script_tag(flags) do
     flags_json_tag_id = Application.get_env(:lissome, :flags_json_tag_id, "ls-model")
 
-    html <>
-      """
-      <script type="module" src="gleam/#{module_name}.entry.mjs"></script>
-      <script type="application/json" id="#{flags_json_tag_id}">#{Utils.json(flags)}</script>
-      """
+    :lustre@element@html.script(
+      [
+        :lustre@attribute.type_("application/json"),
+        :lustre@attribute.id(flags_json_tag_id)
+      ],
+      Utils.json(flags)
+    )
+  end
+
+  defp module_base_name(module_name) do
+    module_name |> Atom.to_string() |> String.split("@") |> List.last()
   end
 
   defp lustre_to_string(lustre_html) do
