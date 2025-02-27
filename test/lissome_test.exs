@@ -1,4 +1,4 @@
 defmodule LissomeTest do
   use ExUnit.Case
-  doctest Lissome
+  doctest Lissome.Utils
 end
