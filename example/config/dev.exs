@@ -16,7 +16,8 @@ config :example_lissome, ExampleLissomeWeb.Endpoint,
   secret_key_base: "r7mvMeR9opTxZ26yDyVRkBbfSWQrjhB6bPTdomM/+xE5xGyQE4VXphNWk8oWggQd",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:example_lissome, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:example_lissome, ~w(--watch)]}
+    tailwind: {Tailwind, :install_and_run, [:example_lissome, ~w(--watch)]},
+    gleam: {Lissome.GleamBuilder, :build_gleam, ["assets/lustre", :javascript]}
   ]
 
 # ## SSL Support

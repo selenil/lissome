@@ -8,8 +8,8 @@ defmodule ExampleLissome.MixProject do
       app: @app,
       name: "#{@app}",
       archives: [mix_gleam: "~> 0.6"],
-      compilers: [:gleam, :gleam_js] ++ Mix.compilers(),
-      erlc_paths: ["build/dev/erlang/#{@app}/_gleam_artefacts"],
+      compilers: [:gleam] ++ Mix.compilers(),
+      erlc_paths: ["assets/lustre/build/dev/erlang/lustre_app/_gleam_artefacts"],
       erlc_include_path: "build/dev/erlang/#{@app}/include",
       prune_code_paths: false,
       version: "0.1.0",
@@ -71,11 +71,12 @@ defmodule ExampleLissome.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "deps.get": ["deps.get", "gleam.deps.get"],
+      compile: ["cmd --cd assets/lustre gleam build --target erlang", "compile"],
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind example_lissome", "esbuild example_lissome"],
       "assets.deploy": [
+        "cmd --cd assets/lustre gleam build --target javascript",
         "tailwind example_lissome --minify",
         "esbuild example_lissome --minify",
         "phx.digest"

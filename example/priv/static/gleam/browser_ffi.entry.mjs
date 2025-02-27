@@ -1,1 +1,0 @@
-import { main } from './browser_ffi.js'; main?.();

@@ -132,7 +132,7 @@ fn parse_flags(json: String) {
 // panic as this function doesn't have sense outside Javascript
 // but this at least allows the compilation to succeed.
 // This is not a desired solution, we should find a better.
-@external(javascript, "./browser_ffi.mjs", "getElementById")
+@external(javascript, "./ffi/browser_ffi.mjs", "getElementById")
 fn get_element_by_id(_id: String) -> String {
   panic as "Not supported in Erlang"
 }
