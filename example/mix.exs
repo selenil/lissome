@@ -1,17 +1,11 @@
 defmodule ExampleLissome.MixProject do
   use Mix.Project
 
-  @app :example_lissome
-
   def project do
     [
-      app: @app,
-      name: "#{@app}",
-      archives: [mix_gleam: "~> 0.6"],
-      compilers: [:gleam] ++ Mix.compilers(),
+      app: :example_lissome,
+      name: "example_lissome",
       erlc_paths: ["assets/lustre/build/dev/erlang/lustre_app/_gleam_artefacts"],
-      erlc_include_path: "build/dev/erlang/#{@app}/include",
-      prune_code_paths: false,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
