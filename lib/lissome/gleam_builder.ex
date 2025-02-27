@@ -28,12 +28,9 @@ defmodule Lissome.GleamBuilder do
     gleam? =
       File.exists?(gleam_src) and not Enum.empty?(gleam_files)
 
-    if gleam? do
-      build(target, gleam_dir)
-      :ok
-    else
-      :ok
-    end
+    if gleam?, do: build(target, gleam_dir)
+
+    :ok
   end
 
   defp build(target, gleam_dir) when is_atom(target) do
