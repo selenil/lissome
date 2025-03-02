@@ -56,7 +56,7 @@ defmodule Lissome.Component do
   attr(
     :ssr,
     :boolean,
-    default: true,
+    default: false,
     doc: "Whether to render the app on the server side"
   )
 
