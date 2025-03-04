@@ -10,6 +10,8 @@ defmodule Lissome.GleamBuilder do
   @doc """
   Builds Gleam source files to the specified target.
 
+  If the target is `:erlang`, the compiled modules will be loaded.
+
   ## Parameters
     * `target` - The build target, either `:javascript` or `:erlang`. Uses the configured `:gleam_dir` from application config, defaulting to #{@default_gleam_dir}
 
@@ -46,6 +48,8 @@ defmodule Lissome.GleamBuilder do
 
   defp build(target, gleam_dir) when is_binary(target) do
     cmd("gleam", ["build", "--target", target], cd: gleam_dir)
+
+    if target == "erlang", do: compile_and_load_erlang_modules(gleam_dir)
   end
 
   defp cmd(command, args, opts) do
@@ -57,5 +61,46 @@ defmodule Lissome.GleamBuilder do
       )
 
     System.cmd(command, args, opts)
+  end
+
+  defp compile_and_load_erlang_modules(gleam_dir) do
+    gleam_app_name =
+      extract_gleam_app_name(gleam_dir)
+
+    build_path = "build/dev/erlang/#{gleam_app_name}/_gleam_artefacts/"
+
+    outdir =
+      Mix.Project.build_path()
+      |> Path.join("lib/#{gleam_app_name}/ebin")
+      |> String.to_charlist()
+
+    File.mkdir_p!(outdir)
+
+    gleam_dir
+    |> Path.join([build_path, "**/*.erl"])
+    |> Path.wildcard()
+    |> Enum.map(&(String.replace(&1, ".erl", "") |> String.to_charlist()))
+    |> Enum.each(fn file ->
+      {:ok, module} =
+        :compile.file(file, [
+          :report_errors,
+          :report_warnings,
+          {:outdir, outdir}
+        ])
+
+      :code.add_patha(outdir)
+      :code.load_file(module)
+    end)
+  end
+
+  # replace this with a call to the gleam export package-info
+  # command when it's added to gleam
+  defp extract_gleam_app_name(gleam_dir) do
+    content =
+      gleam_dir
+      |> Path.join("gleam.toml")
+      |> File.read!()
+
+    Regex.run(~r/name = "(.*)"/, content) |> List.last()
   end
 end
