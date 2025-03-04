@@ -6,18 +6,24 @@ defmodule Lissome.GleamBuilder do
   """
 
   @gleam_pattern "**/*.gleam"
-
+  @default_gleam_dir "assets/lustre"
   @doc """
   Builds Gleam source files to the specified target.
 
   ## Parameters
-
-    * `gleam_dir` - The root directory containing the Gleam project
-    * `target` - The build target, either `:javascript` or `:erlang`
+    * `target` - The build target, either `:javascript` or `:erlang`. Uses the configured `:gleam_dir` from application config, defaulting to #{@default_gleam_dir}
 
   Returns `:ok`.
   """
-  def build_gleam(gleam_dir, target) do
+  def build_gleam(target) do
+    gleam_dir = Application.get_env(:lissome, :gleam_dir, @default_gleam_dir)
+    build_gleam(gleam_dir, target)
+  end
+
+  @doc """
+  Same as `build_gleam/1`, but accepts the gleam directory path as its second argument.
+  """
+  def build_gleam(target, gleam_dir) do
     gleam_src = Path.join(gleam_dir, "src")
 
     gleam_files =
