@@ -17,7 +17,7 @@ defmodule Lissome.GleamBuilder do
   """
   def build_gleam(target) do
     gleam_dir = Application.get_env(:lissome, :gleam_dir, @default_gleam_dir)
-    build_gleam(gleam_dir, target)
+    build_gleam(target, gleam_dir)
   end
 
   @doc """
@@ -41,6 +41,10 @@ defmodule Lissome.GleamBuilder do
 
   defp build(target, gleam_dir) when is_atom(target) do
     target = Atom.to_string(target)
+    build(target, gleam_dir)
+  end
+
+  defp build(target, gleam_dir) when is_binary(target) do
     cmd("gleam", ["build", "--target", target], cd: gleam_dir)
   end
 
