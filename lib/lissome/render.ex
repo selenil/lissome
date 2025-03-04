@@ -10,7 +10,13 @@ defmodule Lissome.Render do
     model =
       module_name
       |> apply(String.to_atom(init_fn), [{:flags, flags}])
-      |> elem(1)
+      |> case do
+        {{_, model}, _effect} ->
+          model
+
+        {_, model} ->
+          model
+      end
 
     view =
       apply(module_name, String.to_atom(view_fn), [model_to_tuple(model)])
