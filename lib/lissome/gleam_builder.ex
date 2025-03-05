@@ -47,9 +47,10 @@ defmodule Lissome.GleamBuilder do
   end
 
   defp build(target, gleam_dir) when is_binary(target) do
-    cmd("gleam", ["build", "--target", target], cd: gleam_dir)
+    {_, exit_code} = cmd("gleam", ["build", "--target", target], cd: gleam_dir)
 
-    if target == "erlang", do: compile_and_load_erlang_modules(gleam_dir)
+    if exit_code == 0 and target == "erlang",
+      do: compile_and_load_erlang_modules(gleam_dir)
   end
 
   defp cmd(command, args, opts) do
@@ -71,16 +72,18 @@ defmodule Lissome.GleamBuilder do
 
     outdir =
       Mix.Project.build_path()
-      |> Path.join("lib/#{gleam_app_name}/ebin")
+      |> Path.join("lib/_#{gleam_app_name}/ebin")
       |> String.to_charlist()
 
     File.mkdir_p!(outdir)
+    :code.add_patha(outdir)
 
     gleam_dir
     |> Path.join([build_path, "**/*.erl"])
     |> Path.wildcard()
-    |> Enum.map(&(String.replace(&1, ".erl", "") |> String.to_charlist()))
     |> Enum.each(fn file ->
+      file = String.replace(file, ".erl", "") |> String.to_charlist()
+
       {:ok, module} =
         :compile.file(file, [
           :report_errors,
@@ -88,7 +91,6 @@ defmodule Lissome.GleamBuilder do
           {:outdir, outdir}
         ])
 
-      :code.add_patha(outdir)
       :code.load_file(module)
     end)
   end
