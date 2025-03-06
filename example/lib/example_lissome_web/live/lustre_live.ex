@@ -52,7 +52,7 @@ defmodule ExampleLissomeWeb.LustreLive do
         </button>
       </div>
       </div>
-      <.lustre name="hello" flags={%{count: 5, light_on: true}} />
+      <.lustre ssr={true} name="hello" flags={%{count: 5, light_on: true}} />
     </div>
     """
   end

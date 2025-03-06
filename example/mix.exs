@@ -5,7 +5,6 @@ defmodule ExampleLissome.MixProject do
     [
       app: :example_lissome,
       name: "example_lissome",
-      erlc_paths: ["assets/lustre/build/dev/erlang/lustre_app/_gleam_artefacts"],
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -65,7 +64,7 @@ defmodule ExampleLissome.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      compile: ["cmd --cd assets/lustre gleam build --target erlang", "compile"],
+      compile: ["lissome.build_gleam", "compile"],
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind example_lissome", "esbuild example_lissome"],
