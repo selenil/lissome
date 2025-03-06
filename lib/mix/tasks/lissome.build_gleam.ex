@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Lissome.BuildGleam do
 
   @default_target "erlang"
 
-  defguardp valid_target?(target) when target in ["javascript", "erlang"]
+  defguardp is_valid_target(target) when target in ["javascript", "erlang"]
 
   @impl true
   def run(args) do
@@ -27,10 +27,10 @@ defmodule Mix.Tasks.Lissome.BuildGleam do
       {_, [gleam_dir], []} ->
         Lissome.GleamBuilder.build_gleam(@default_target, gleam_dir)
 
-      {[target: target], [], []} when valid_target?(target) ->
+      {[target: target], [], []} when is_valid_target(target) ->
         Lissome.GleamBuilder.build_gleam(target)
 
-      {[target: target], [gleam_dir], []} when valid_target?(target) ->
+      {[target: target], [gleam_dir], []} when is_valid_target(target) ->
         Lissome.GleamBuilder.build_gleam(target, gleam_dir)
 
       _ ->
