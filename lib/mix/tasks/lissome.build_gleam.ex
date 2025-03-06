@@ -24,14 +24,14 @@ defmodule Mix.Tasks.Lissome.BuildGleam do
       {[], [], []} ->
         Lissome.GleamBuilder.build_gleam(@default_target)
 
-      {_, [gleam_dir], []} ->
-        Lissome.GleamBuilder.build_gleam(@default_target, gleam_dir)
-
       {[target: target], [], []} when is_valid_target(target) ->
         Lissome.GleamBuilder.build_gleam(target)
 
       {[target: target], [gleam_dir], []} when is_valid_target(target) ->
         Lissome.GleamBuilder.build_gleam(target, gleam_dir)
+
+      {_, [gleam_dir], []} ->
+        Lissome.GleamBuilder.build_gleam(@default_target, gleam_dir)
 
       _ ->
         Mix.raise("""
