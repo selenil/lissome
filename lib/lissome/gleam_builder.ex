@@ -84,14 +84,14 @@ defmodule Lissome.GleamBuilder do
     |> Enum.each(fn file ->
       file = String.replace(file, ".erl", "") |> String.to_charlist()
 
-      {:ok, module} =
-        :compile.file(file, [
-          :report_errors,
-          :report_warnings,
-          {:outdir, outdir}
-        ])
-
-      :code.load_file(module)
+      case :compile.file(file, [
+             :report_errors,
+             :report_warnings,
+             {:outdir, outdir}
+           ]) do
+        {:ok, module} -> :code.load_file(module)
+        _ -> nil
+      end
     end)
   end
 
