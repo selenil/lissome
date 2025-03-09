@@ -10,9 +10,14 @@ defmodule Lissome.MixProject do
       app: :lissome,
       name: "Lissome",
       version: @version,
+      erlc_paths: [
+        "src_gleam/build/packages/gleam_stdlib/src",
+        "src_gleam/build/packages/lustre/src"
+      ],
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      aliases: aliases(),
 
       # Hex
       description: description(),
@@ -43,10 +48,16 @@ defmodule Lissome.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 1.0.0"},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+    ]
+  end
 
-      # gleam dependencies
-      {:lustre, "~> 4.6.3", app: false, manager: :rebar3, override: true}
+  defp aliases do
+    [
+      compile: [
+        "lissome.build_gleam src_gleam",
+        "compile"
+      ]
     ]
   end
 
