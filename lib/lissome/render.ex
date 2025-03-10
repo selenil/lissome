@@ -7,9 +7,24 @@ defmodule Lissome.Render do
   This function will call the `init_fn` function to get the initial model and then the `view_fn` function to get the initial view.
   """
   def ssr_lustre(module_name, init_fn, view_fn, target_id, flags) do
+    init_fn = String.to_atom(init_fn)
+    view_fn = String.to_atom(view_fn)
+
+    init_args =
+      cond do
+        :erlang.function_exported(module_name, init_fn, 1) ->
+          [{:flags, flags}]
+
+        :erlang.function_exported(module_name, init_fn, 2) ->
+          [{:flags, flags}, nil]
+
+        true ->
+          raise "The init function must be avaliable and have arity 1 or 2"
+      end
+
     model =
       module_name
-      |> apply(String.to_atom(init_fn), [{:flags, flags}])
+      |> apply(init_fn, init_args)
       |> case do
         {{_, model}, _effect} ->
           model
@@ -19,7 +34,7 @@ defmodule Lissome.Render do
       end
 
     view =
-      apply(module_name, String.to_atom(view_fn), [model_to_tuple(model)])
+      apply(module_name, view_fn, [model_to_tuple(model)])
 
     flags_json_tag = flags_json_script_tag(flags)
 
