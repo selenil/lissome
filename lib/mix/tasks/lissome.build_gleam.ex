@@ -13,25 +13,24 @@ defmodule Mix.Tasks.Lissome.BuildGleam do
   """
 
   use Mix.Task
+  import Lissome.GleamBuilder
 
   @default_target "erlang"
-
-  defguardp is_valid_target(target) when target in ["javascript", "erlang"]
 
   @impl true
   def run(args) do
     case OptionParser.parse(args, strict: [target: :string]) do
       {[], [], []} ->
-        Lissome.GleamBuilder.build_gleam(@default_target)
+        build_gleam(@default_target)
 
       {[target: target], [], []} when is_valid_target(target) ->
-        Lissome.GleamBuilder.build_gleam(target)
+        build_gleam(target)
 
       {[target: target], [gleam_dir], []} when is_valid_target(target) ->
-        Lissome.GleamBuilder.build_gleam(target, gleam_dir)
+        build_gleam(target, gleam_dir: gleam_dir)
 
       {_, [gleam_dir], []} ->
-        Lissome.GleamBuilder.build_gleam(@default_target, gleam_dir)
+        build_gleam(@default_target, gleam_dir: gleam_dir)
 
       _ ->
         Mix.raise("""

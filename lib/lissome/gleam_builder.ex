@@ -2,30 +2,36 @@ defmodule Lissome.GleamBuilder do
   @moduledoc """
   Wrapper around the Gleam build tool.
 
-  This module provides functionality to build Gleam source files to either JavaScript or Erlang targets using the `gleam build` command.
+  This module provides functionality to build Gleam source files to either JavaScript or Erlang targets using the Gleam CLI.
   """
 
   @gleam_pattern "**/*.gleam"
-  @default_gleam_dir "assets/lustre"
+  @default_gleam_dir Application.compile_env(:lissome, :gleam_dir, "assets/lustre_app")
+
+  defguard is_valid_target(target) when target in ["javascript", "erlang"]
+
   @doc """
-  Builds Gleam source files to the specified target.
+  Builds Gleam source files to the specified target using the `gleam build` command.
 
-  If the target is `:erlang`, the compiled modules will be loaded.
+  The path to the Gleam source files can be specified via the `:gleam_dir` option. If not provided, it will use the value of `:gleam_dir` from the `lissome` application config with a fallback to `"assets/lustre_app"` if the config is not set.
 
-  ## Parameters
-    * `target` - The build target, either `:javascript` or `:erlang`. Uses the configured `:gleam_dir` from application config, defaulting to #{@default_gleam_dir}
+  When `:compile_package` is set to `true`, the `gleam compile-package` command will be used instead of `gleam build`.
+
+  If the target is `:erlang`, the compiled modules will be automatically loaded.
 
   Returns `:ok`.
-  """
-  def build_gleam(target) do
-    gleam_dir = Application.get_env(:lissome, :gleam_dir, @default_gleam_dir)
-    build_gleam(target, gleam_dir)
-  end
 
-  @doc """
-  Same as `build_gleam/1`, but accepts the gleam directory path as its second argument.
+  ## Examples
+
+      iex> Lissome.GleamBuilder.build_gleam(:erlang)
+
+      iex> Lissome.GleamBuilder.build_gleam(:javascript)
+
+      iex> Lissome.GleamBuilder.build_gleam(:javascript, gleam_dir: "assets/my_gleam_app", compile_package: true)
+
   """
-  def build_gleam(target, gleam_dir) do
+  def build_gleam(target, opts \\ []) when is_list(opts) do
+    gleam_dir = opts[:gleam_dir] || @default_gleam_dir
     gleam_src = Path.join(gleam_dir, "src")
 
     gleam_files =
@@ -36,21 +42,55 @@ defmodule Lissome.GleamBuilder do
     gleam? =
       File.exists?(gleam_src) and not Enum.empty?(gleam_files)
 
-    if gleam?, do: build(target, gleam_dir)
+    if gleam?, do: build(target, gleam_dir, Keyword.drop(opts, [:gleam_dir]))
 
     :ok
   end
 
-  defp build(target, gleam_dir) when is_atom(target) do
+  defp build(target, gleam_dir, opts)
+       when is_atom(target) do
     target = Atom.to_string(target)
-    build(target, gleam_dir)
+    build(target, gleam_dir, opts)
   end
 
-  defp build(target, gleam_dir) when is_binary(target) do
-    {_, exit_code} = cmd("gleam", ["build", "--target", target], cd: gleam_dir)
+  defp build(target, gleam_dir, opts)
+       when is_binary(target)
+       when is_valid_target(target) do
+    compile_package = opts[:compile_package] || false
+    gleam_app = opts[:gleam_app] || extract_gleam_app_name(gleam_dir)
+
+    args =
+      if compile_package,
+        do: compile_package_args(target, gleam_app),
+        else: ["build", "--target", target]
+
+    {_, exit_code} = cmd("gleam", args, cd: gleam_dir)
 
     if exit_code == 0 and target == "erlang",
-      do: compile_and_load_erlang_modules(gleam_dir)
+      do: compile_and_load_erlang_modules(gleam_dir, gleam_app)
+  end
+
+  defp compile_package_args(target, gleam_app) do
+    build = "build/dev/#{target}"
+    out = Path.join(build, gleam_app)
+
+    target_specific_args =
+      case target do
+        "erlang" -> ["--no-beam"]
+        "javascript" -> ["--javascript-prelude", build]
+      end
+
+    [
+      "compile-package",
+      "--target",
+      target,
+      "--package",
+      ".",
+      "--out",
+      out,
+      "--lib",
+      build
+    ] ++ target_specific_args
   end
 
   defp cmd(command, args, opts) do
@@ -64,19 +104,16 @@ defmodule Lissome.GleamBuilder do
     System.cmd(command, args, opts)
   end
 
-  defp compile_and_load_erlang_modules(gleam_dir) do
-    gleam_app_name =
-      extract_gleam_app_name(gleam_dir)
-
-    build_path = "build/dev/erlang/#{gleam_app_name}/_gleam_artefacts/"
+  defp compile_and_load_erlang_modules(gleam_dir, gleam_app) do
+    build_path = "build/dev/erlang/#{gleam_app}/_gleam_artefacts/"
 
     outdir =
       Mix.Project.build_path()
-      |> Path.join("lib/_#{gleam_app_name}/ebin")
+      |> Path.join("lib/_#{gleam_app}/ebin")
       |> String.to_charlist()
 
     File.mkdir_p!(outdir)
-    :code.add_patha(outdir)
+    Code.prepend_path(outdir, cache: true)
 
     gleam_dir
     |> Path.join([build_path, "**/*.erl"])
@@ -86,12 +123,15 @@ defmodule Lissome.GleamBuilder do
       if String.ends_with?(file, "@@compile.erl") do
         :ok
       else
-        compile_and_load_erl_file(file, outdir)
+        case compile_erl_file(file, outdir) do
+          {:ok, module} -> load_erl_module(module)
+          _ -> :ok
+        end
       end
     end)
   end
 
-  defp compile_and_load_erl_file(file, outdir) do
+  defp compile_erl_file(file, outdir) do
     file = String.replace(file, ".erl", "") |> String.to_charlist()
 
     opts = [
@@ -100,10 +140,15 @@ defmodule Lissome.GleamBuilder do
       {:outdir, outdir}
     ]
 
-    case :compile.file(file, opts) do
-      {:ok, module} -> :code.load_file(module)
-      _ -> :ok
+    :compile.file(file, opts)
+  end
+
+  defp load_erl_module(module) do
+    if :code.is_loaded(module) do
+      :code.purge(module)
     end
+
+    :code.load_file(module)
   end
 
   # replace this with a call to the gleam export package-info
