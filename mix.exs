@@ -17,7 +17,6 @@ defmodule Lissome.MixProject do
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      aliases: aliases(),
 
       # Hex
       description: description(),
@@ -49,15 +48,6 @@ defmodule Lissome.MixProject do
     [
       {:phoenix_live_view, "~> 1.0.0"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
-    ]
-  end
-
-  defp aliases do
-    [
-      compile: [
-        "lissome.build_gleam src_gleam",
-        "compile"
-      ]
     ]
   end
 
