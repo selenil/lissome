@@ -30,7 +30,13 @@ defmodule Lissome.GleamBuilder do
       iex> Lissome.GleamBuilder.build_gleam(:javascript, gleam_dir: "assets/my_gleam_app", compile_package: true)
 
   """
-  def build_gleam(target, opts \\ []) when is_list(opts) do
+  def build_gleam(target, opts \\ [])
+
+  def build_gleam(targets, opts) when is_list(targets) and is_list(opts) do
+    Enum.each(targets, &build_gleam(&1, opts))
+  end
+
+  def build_gleam(target, opts) when is_list(opts) do
     gleam_dir = opts[:gleam_dir] || @default_gleam_dir
     gleam_src = Path.join(gleam_dir, "src")
 
