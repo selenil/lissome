@@ -11,9 +11,11 @@ defmodule Lissome.MixProject do
       name: "Lissome",
       version: @version,
       erlc_paths: [
+        "src_gleam/build/dev/erlang/lissome/_gleam_artefacts",
         "src_gleam/build/packages/gleam_stdlib/src",
         "src_gleam/build/packages/lustre/src"
       ],
+      compilers: [:elixir] ++ List.delete(Mix.compilers(), :elixir),
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
