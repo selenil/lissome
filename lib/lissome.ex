@@ -9,6 +9,6 @@ defmodule Lissome do
   Lissome.GleamBuilder.build_gleam(
     :erlang,
     gleam_dir: @gleam_package_path,
-    load_beam_modules: false
+    erlang_outdir: "lib/lissome/ebin"
   )
 end
