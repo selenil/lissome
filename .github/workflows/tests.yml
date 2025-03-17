@@ -1,0 +1,91 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+env:
+  MIX_ENV: test
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: ["27"]
+        elixir: ["1.18"]
+        gleam: ["1.9.0"]
+    steps:
+      - name: Set up Elixir and Gleam
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+          gleam-version: ${{matrix.gleam}}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache Elixir deps
+        id: cache-elixir-deps
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-elixir-deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+
+      - name: Cache Elixir build
+        id: cache-elixir-build
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-elixir-build
+        with:
+          path: _build
+          key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-${{ env.cache-name }}-
+            ${{ runner.os }}-mix-
+
+      - name: Cache Gleam
+        id: cache-gleam
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-gleam
+        with:
+          path: gleam_src/build
+          key: ${{ runner.os }}-gleam-${{ env.cache-name }}-${{ hashFiles('gleam_src/manifest.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gleam-${{ env.cache-name }}-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Compiles without warnings
+        run: mix compile --warnings-as-errors
+
+      - name: Check Elixir formatting
+        run: mix format --check-formatted
+
+      - name: Check Gleam formatting
+        working-directory: gleam_src
+        run: gleam format --check src test
+
+      - name: Run Elixir tests
+        run: mix test
+
+      - name: Run Gleam tests
+        working-directory: gleam_src
+        run: gleam test
