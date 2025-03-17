@@ -40,6 +40,13 @@ defmodule Lissome.Component do
   )
 
   attr(
+    :flags_type,
+    :string,
+    default: "model",
+    doc: "The name of your Gleam type that represents the flags your init function receives."
+  )
+
+  attr(
     :id,
     :string,
     default: "app",
@@ -72,6 +79,7 @@ defmodule Lissome.Component do
           module_name,
           assigns[:init_fn],
           assigns[:view_fn],
+          assigns[:flags_type],
           assigns[:id],
           assigns[:flags]
         )

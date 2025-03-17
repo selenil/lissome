@@ -6,19 +6,27 @@ defmodule Lissome.Render do
 
   This function will call the `init_fn` function to get the initial model and then the `view_fn` function to get the initial view.
   """
-  def ssr_lustre(module_name, init_fn, view_fn, target_id, flags) do
+  def ssr_lustre(module_name, init_fn, view_fn, flags_type, target_id, flags) do
+    Code.ensure_loaded!(module_name)
+
     init_fn = String.to_atom(init_fn)
     view_fn = String.to_atom(view_fn)
+    flags_type = String.to_atom(flags_type)
 
-    Code.ensure_loaded!(module_name)
+    flags_record =
+      Utils.extract_and_create_record(
+        module_name,
+        flags_type,
+        flags
+      )
 
     init_args =
       cond do
         :erlang.function_exported(module_name, init_fn, 1) ->
-          [{:flags, flags}]
+          [flags_record]
 
         :erlang.function_exported(module_name, init_fn, 2) ->
-          [{:flags, flags}, nil]
+          [flags_record, nil]
 
         true ->
           raise "The init function must be avaliable and have arity 1 or 2"
@@ -28,15 +36,15 @@ defmodule Lissome.Render do
       module_name
       |> apply(init_fn, init_args)
       |> case do
-        {{_, model}, _effect} ->
+        {model, _effect} ->
           model
 
-        {_, model} ->
+        model ->
           model
       end
 
     view =
-      apply(module_name, view_fn, [model_to_tuple(model)])
+      apply(module_name, view_fn, [model])
 
     flags_json_tag = flags_json_script_tag(flags)
 
@@ -60,13 +68,6 @@ defmodule Lissome.Render do
     module_base_name
     |> wrap_in_container(target_id, [flags_json_tag])
     |> lustre_to_string()
-  end
-
-  defp model_to_tuple(model) when is_map(model) do
-    model
-    |> Map.values()
-    |> List.to_tuple()
-    |> Tuple.insert_at(0, :model)
   end
 
   defp wrap_in_container(module_name, target_id, children) when is_list(children) do
