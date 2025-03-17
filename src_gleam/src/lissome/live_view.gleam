@@ -87,7 +87,7 @@ pub fn push_event_to(
 pub fn handle_event(
   lv_hook hook: LiveViewHook,
   event evt: String,
-  on_reply reply_wrapper: fn(Dynamic) -> b,
+  on_reply reply_wrapper: fn(a) -> b,
 ) {
   fn(dispatch) {
     let _ =
