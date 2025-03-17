@@ -77,11 +77,11 @@ defmodule Lissome.Component do
       if assigns[:ssr] do
         Render.ssr_lustre(
           module_name,
-          assigns[:init_fn],
-          assigns[:view_fn],
-          assigns[:flags_type],
-          assigns[:id],
-          assigns[:flags]
+          assigns[:flags],
+          init_fn: assigns[:init_fn],
+          view_fn: assigns[:view_fn],
+          flags_type: assigns[:flags_type],
+          target_id: assigns[:id]
         )
       else
         Render.render_lustre(module_name, assigns[:id], assigns[:flags])

@@ -6,18 +6,21 @@ defmodule Lissome.Render do
 
   This function will call the `init_fn` function to get the initial model and then the `view_fn` function to get the initial view.
   """
-  def ssr_lustre(module_name, init_fn, view_fn, flags_type, target_id, flags) do
+  def ssr_lustre(module_name, flags, opts \\ []) do
     Code.ensure_loaded!(module_name)
 
-    init_fn = String.to_atom(init_fn)
-    view_fn = String.to_atom(view_fn)
-    flags_type = String.to_atom(flags_type)
+    init_fn = Keyword.get(opts, :init_fn, "init") |> String.to_atom()
+    view_fn = Keyword.get(opts, :view_fn, "view") |> String.to_atom()
+    flags_type = Keyword.get(opts, :flags_type, "model") |> String.to_atom()
+    target_id = Keyword.get(opts, :target_id, "app")
+    hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
 
     flags_record =
       Utils.extract_and_create_record(
         module_name,
         flags_type,
-        flags
+        flags,
+        hrl_file_path
       )
 
     init_args =

@@ -1,0 +1,4 @@
+-record(flags, {
+    name,
+    count
+}).
