@@ -77,12 +77,12 @@ jobs:
         run: mix format --check-formatted
 
       - name: Check Gleam formatting
-        working-directory: gleam_src
+        working-directory: src_gleam
         run: gleam format --check src test
 
       - name: Run Elixir tests
         run: mix test
 
       - name: Run Gleam tests
-        working-directory: gleam_src
+        working-directory: src_gleam
         run: gleam test
