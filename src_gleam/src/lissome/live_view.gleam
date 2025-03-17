@@ -66,11 +66,13 @@ pub fn push_event_to(
   to query_selector: String,
   event evt: String,
   payload p: a,
-  on_reply reply: b,
+  on_reply reply_wrapper: fn(LiveViewPushResponse) -> b,
 ) {
   fn(dispatch) {
     let _ =
-      do_push_event_to(hook, query_selector, evt, p, fn() { dispatch(reply) })
+      do_push_event_to(hook, query_selector, evt, p, fn(reply, ref) {
+        reply_wrapper(LiveViewPushResponse(reply, ref)) |> dispatch()
+      })
 
     Nil
   }

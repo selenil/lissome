@@ -10,6 +10,8 @@ defmodule Lissome.Render do
     init_fn = String.to_atom(init_fn)
     view_fn = String.to_atom(view_fn)
 
+    Code.ensure_loaded!(module_name)
+
     init_args =
       cond do
         :erlang.function_exported(module_name, init_fn, 1) ->
