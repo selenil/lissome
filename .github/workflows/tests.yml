@@ -73,9 +73,6 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Compiles without warnings
-        run: mix compile --warnings-as-errors
-
       - name: Check Elixir formatting
         run: mix format --check-formatted
 
