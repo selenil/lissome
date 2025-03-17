@@ -49,6 +49,7 @@ defmodule Lissome.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 1.0.0"},
+      {:file_system, "~> 0.3 or ~> 1.0", optional: true},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
   end
