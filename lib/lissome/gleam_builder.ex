@@ -77,11 +77,8 @@ defmodule Lissome.GleamBuilder do
     watch? = Keyword.get(opts, :watch, false)
 
     gleam_app =
-      (compile_package? || load_beam_modules?) &&
-        case get_gleam_app_from_config() do
-          nil -> extract_gleam_app_name(gleam_dir)
-          gleam_app -> gleam_app
-        end
+      ((compile_package? || load_beam_modules?) &&
+         extract_gleam_app_name(gleam_dir)) || nil
 
     args =
       if compile_package?,
