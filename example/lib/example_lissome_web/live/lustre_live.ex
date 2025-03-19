@@ -75,8 +75,7 @@ defmodule ExampleLissomeWeb.LustreLive do
         </div>
 
         <.lustre ssr={true} name="hello" flags={%{
-          server_count: GleamType.from_value(:some, @count),
-          foo: GleamType.from_record(:foo, :hello, %{bar: "foobar"})
+          server_count: GleamType.from_value(:some, @count)
         }} flags_type="flags"  />
       </div>
     </div>

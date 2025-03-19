@@ -1,7 +1,6 @@
 import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/int
-import gleam/io
 import gleam/option.{type Option, None, Some}
 import lissome
 import lissome/live_view
@@ -14,12 +13,8 @@ import lustre/event
 
 const inital_count = 10
 
-pub type Foo {
-  Foo(bar: String)
-}
-
 pub type Flags {
-  Flags(server_count: Option(Int), foo: Foo)
+  Flags(server_count: Option(Int))
 }
 
 pub type Model {
@@ -27,7 +22,6 @@ pub type Model {
 }
 
 pub fn init(flags: Flags, lv_hook: lissome.LiveViewHook) {
-  io.debug(flags.foo)
   let model =
     Model(
       client_count: inital_count,
@@ -191,17 +185,12 @@ pub fn view(model: Model) {
 pub fn main(hook: lissome.LiveViewHook) {
   let decoder = {
     use server_count <- decode.field("server_count", decode.int)
-    use foo <- decode.field("foo", {
-      use bar <- decode.field("bar", decode.string)
-      decode.success(Foo(bar: bar))
-    })
-
-    decode.success(Flags(server_count: Some(server_count), foo: foo))
+    decode.success(Flags(server_count: Some(server_count)))
   }
 
   let flags = case lissome.get_flags(id: "ls-model", using: decoder) {
     Ok(flags) -> flags
-    Error(_) -> Flags(server_count: None, foo: Foo("foobar"))
+    Error(_) -> Flags(server_count: None)
   }
 
   let app = lissome.application(init, update, view, hook)
