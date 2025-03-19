@@ -12,42 +12,6 @@ defmodule Lissome.UtilsTest do
     end
   end
 
-  describe "extract_and_create_record/4" do
-    test "creates record tuple with provided values" do
-      hrl_file =
-        mock_hrl_file("gleam_mock_Flags")
-
-      flags = %{count: 5, name: "John"}
-
-      result =
-        Utils.extract_and_create_record(
-          "gleam_mock",
-          :flags,
-          flags,
-          hrl_file
-        )
-
-      assert result == {:flags, "John", 5}
-    end
-
-    test "handles missing values with nil" do
-      hrl_file =
-        mock_hrl_file("gleam_mock_Flags")
-
-      flags = %{name: "John"}
-
-      result =
-        Utils.extract_and_create_record(
-          "gleam_mock",
-          :flags,
-          flags,
-          hrl_file
-        )
-
-      assert result == {:flags, "John", nil}
-    end
-  end
-
   describe "extract_gleam_app_name/1" do
     test "extracts app name from gleam.toml" do
       tmp_dir = System.tmp_dir!() |> Path.join("lissome_test")

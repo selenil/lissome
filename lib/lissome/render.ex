@@ -1,5 +1,6 @@
 defmodule Lissome.Render do
   alias Lissome.Utils
+  alias Lissome.GleamType
 
   @doc """
   Renders a lustre app in server side.
@@ -16,20 +17,22 @@ defmodule Lissome.Render do
     hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
 
     flags_record =
-      Utils.extract_and_create_record(
-        module_name,
+      GleamType.from_record(
         flags_type,
+        module_name,
         flags,
-        hrl_file_path
+        hrl_file_path: hrl_file_path
       )
+
+    flags_tuple = GleamType.to_erlang_tuple(flags_record)
 
     init_args =
       cond do
         :erlang.function_exported(module_name, init_fn, 1) ->
-          [flags_record]
+          [flags_tuple]
 
         :erlang.function_exported(module_name, init_fn, 2) ->
-          [flags_record, nil]
+          [flags_tuple, nil]
 
         true ->
           raise "The init function must be avaliable and have arity 1 or 2"
