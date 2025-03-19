@@ -10,12 +10,27 @@ module.exports = {
     "./js/**/*.js",
     "../lib/example_lissome_web.ex",
     "../lib/example_lissome_web/**/*.*ex",
-    "../src/**/*.gleam",
+    "./lustre/src/**/*.gleam",
   ],
   theme: {
     extend: {
       colors: {
-        brand: "#FD4F00",
+        liveview: {
+          200: "#ffd4a6",
+          300: "#ffb366",
+          400: "#ff9933",
+          500: "#ff8000",
+          600: "#cc6600",
+          700: "#994d00",
+        },
+        gleam: {
+          200: "#f2c3d7",
+          300: "#e6a6c3",
+          400: "#cc8ca9",
+          500: "#b37390",
+          600: "#995977",
+          700: "#80405e",
+        },
       },
     },
   },

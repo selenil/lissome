@@ -1,138 +1,220 @@
+import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/int
-import gleam/json
+import gleam/io
+import gleam/option.{type Option, None, Some}
+import lissome
+import lissome/live_view
 import lustre
 import lustre/attribute
+import lustre/effect
 import lustre/element
 import lustre/element/html
 import lustre/event
 
-pub type Model {
-  Model(count: Int, light_on: Bool)
+const inital_count = 10
+
+pub type Foo {
+  Foo(bar: String)
 }
 
-pub fn init(flags: Model) -> Model {
-  flags
+pub type Flags {
+  Flags(server_count: Option(Int), foo: Foo)
+}
+
+pub type Model {
+  Model(client_count: Int, server_count: Option(Int), light_on: Bool)
+}
+
+pub fn init(flags: Flags, lv_hook: lissome.LiveViewHook) {
+  io.debug(flags.foo)
+  let model =
+    Model(
+      client_count: inital_count,
+      server_count: flags.server_count,
+      light_on: True,
+    )
+
+  let effects = [
+    live_view.push_event(
+      lv_hook:,
+      event: "update-client-count",
+      payload: model.client_count,
+      on_reply: ServerReply,
+    ),
+    live_view.handle_event(
+      lv_hook:,
+      event: "update-client-count",
+      on_reply: ServerUpdatedCount,
+    ),
+  ]
+
+  #(model, effect.batch(effects))
 }
 
 pub type Msg {
   Increment
   Decrement
   ToggleLight
+  ServerUpdatedCount(dynamic.Dynamic)
+  ServerReply(live_view.LiveViewPushResponse)
 }
 
-pub fn update(model: Model, msg: Msg) -> Model {
+pub fn update(model: Model, msg: Msg, lv_hook: lissome.LiveViewHook) {
   case msg {
-    Increment -> Model(..model, count: model.count + 1)
-    Decrement -> Model(..model, count: model.count - 1)
-    ToggleLight -> Model(..model, light_on: !model.light_on)
+    Increment -> {
+      let count = model.client_count + 1
+      #(
+        Model(..model, client_count: count),
+        update_client_count_effect(lv_hook, count),
+      )
+    }
+    Decrement -> {
+      let count = model.client_count - 1
+      #(
+        Model(..model, client_count: count),
+        update_client_count_effect(lv_hook, count),
+      )
+    }
+    ToggleLight -> #(Model(..model, light_on: !model.light_on), effect.none())
+
+    ServerUpdatedCount(count) -> {
+      let decoder = {
+        use server_count <- decode.field("server_count", decode.int)
+        decode.success(server_count)
+      }
+
+      let server_count = case decode.run(count, decoder) {
+        Ok(count) -> Some(count)
+        Error(_) -> None
+      }
+
+      #(Model(..model, server_count: server_count), effect.none())
+    }
+    ServerReply(live_view.LiveViewPushResponse(_reply, _ref)) -> #(
+      model,
+      effect.none(),
+    )
   }
 }
 
 pub fn view(model: Model) {
-  let count = int.to_string(model.count)
+  let client_count = int.to_string(model.client_count)
+  let server_count = case model.server_count {
+    Some(count) -> int.to_string(count)
+    None -> "..."
+  }
 
-  html.div(
-    [attribute.class("max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg")],
-    [
-      html.p(
-        [attribute.class("text-3xl font-bold text-center text-gray-800 mb-8")],
-        [html.text("Gleam")],
-      ),
+  html.div([attribute.class("p-8 bg-white rounded-xl shadow-lg md:h-[500px]")], [
+    html.h2(
+      [attribute.class("text-2xl font-bold text-center text-gray-800 mb-8")],
+      [html.text("Gleam Counter")],
+    ),
+    html.div([attribute.class("flex flex-col items-center gap-8")], [
       html.div(
-        [attribute.class("flex items-center justify-center gap-4 mb-8")],
         [
-          html.button(
-            [
-              attribute.class(
-                "w-8 h-8 text-center rounded-full bg-gray-200 text-gray-700 text-2xl font-bold hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
-              ),
-              event.on_click(Decrement),
-            ],
-            [element.text("-")],
-          ),
-          html.div(
-            [
-              attribute.class(
-                "text-4xl font-bold text-gray-700 w-16 text-center",
-              ),
-            ],
-            [element.text(count)],
-          ),
-          html.button(
-            [
-              attribute.class(
-                "w-8 h-8 text-center rounded-full bg-gray-200 text-gray-700 text-2xl font-bold hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2",
-              ),
-              event.on_click(Increment),
-            ],
-            [element.text("+")],
+          attribute.class(
+            "flex gap-12 items-center justify-between w-full max-w-md",
           ),
         ],
+        [
+          html.div([attribute.class("flex flex-col items-center gap-2")], [
+            html.div([attribute.class("text-5xl font-bold text-gray-700")], [
+              element.text(client_count),
+            ]),
+            html.div([attribute.class("text-sm text-gray-500 font-medium")], [
+              element.text("Client Count"),
+            ]),
+          ]),
+          html.div([attribute.class("flex flex-col items-center gap-2")], [
+            html.div([attribute.class("text-5xl font-bold text-gray-700")], [
+              element.text(server_count),
+            ]),
+            html.div([attribute.class("text-sm text-gray-500 font-medium")], [
+              element.text("Server Count"),
+            ]),
+          ]),
+        ],
       ),
-      html.div([attribute.class("flex flex-col items-center gap-4")], [
-        html.div(
+      html.div([attribute.class("flex gap-4")], [
+        html.button(
           [
             attribute.class(
-              "w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300 "
-              <> case model.light_on {
-                True -> "bg-yellow-400 text-gray-900"
-                False -> "bg-gray-700 text-white"
-              },
+              "w-12 h-12 flex items-center justify-center rounded-full bg-gleam-200 text-gleam-700 text-2xl font-bold hover:bg-gleam-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gleam-500 focus:ring-offset-2",
             ),
+            event.on_click(Increment),
           ],
-          [
-            case model.light_on {
-              True -> html.text("ON")
-              False -> html.text("OFF")
-            },
-          ],
+          [element.text("+")],
         ),
         html.button(
           [
             attribute.class(
-              "px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+              "w-12 h-12 flex items-center justify-center rounded-full bg-gleam-200 text-gleam-700 text-2xl font-bold hover:bg-gleam-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gleam-500 focus:ring-offset-2",
             ),
-            event.on_click(ToggleLight),
+            event.on_click(Decrement),
           ],
-          [element.text("Toggle light")],
+          [element.text("-")],
         ),
       ]),
-    ],
-  )
+    ]),
+    html.div([attribute.class("flex flex-col items-center gap-4 mt-8")], [
+      html.div(
+        [
+          attribute.class(
+            "w-20 h-20 rounded-full flex items-center justify-center text-lg font-medium transition-colors duration-300 "
+            <> case model.light_on {
+              True -> "bg-gleam-400 text-white shadow-lg shadow-gleam-200"
+              False -> "bg-gray-200 text-gray-600"
+            },
+          ),
+        ],
+        [
+          case model.light_on {
+            True -> html.text("ON")
+            False -> html.text("OFF")
+          },
+        ],
+      ),
+      html.button(
+        [
+          attribute.class(
+            "px-6 py-3 bg-gleam-500 text-white rounded-lg font-medium hover:bg-gleam-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gleam-400 focus:ring-offset-2",
+          ),
+          event.on_click(ToggleLight),
+        ],
+        [element.text("Toggle light")],
+      ),
+    ]),
+  ])
 }
 
-pub fn main() {
-  let json = get_element_by_id("ls-model")
-  let flags = parse_flags(json)
+pub fn main(hook: lissome.LiveViewHook) {
+  let decoder = {
+    use server_count <- decode.field("server_count", decode.int)
+    use foo <- decode.field("foo", {
+      use bar <- decode.field("bar", decode.string)
+      decode.success(Foo(bar: bar))
+    })
 
-  let app = lustre.simple(init, update, view)
+    decode.success(Flags(server_count: Some(server_count), foo: foo))
+  }
+
+  let flags = case lissome.get_flags(id: "ls-model", using: decoder) {
+    Ok(flags) -> flags
+    Error(_) -> Flags(server_count: None, foo: Foo("foobar"))
+  }
+
+  let app = lissome.application(init, update, view, hook)
   let assert Ok(_) = lustre.start(app, "#app", flags)
 
   Nil
 }
 
-fn parse_flags(json: String) {
-  let decoder = {
-    use count <- decode.field("count", decode.int)
-    use light_on <- decode.field("light_on", decode.bool)
-    decode.success(Model(count, light_on))
-  }
-
-  case json.parse(from: json, using: decoder) {
-    Ok(flags) -> flags
-    Error(_) -> Model(8, True)
-  }
-}
-
-// We don't use `plinth` library here because
-// the compilation for Erlang will fail as `plinth`
-// doesn't support the Erlang target.
-// Here we provide an Erlang implementation that just
-// panic as this function doesn't have sense outside Javascript
-// but this at least allows the compilation to succeed.
-// This is not a desired solution, we should find a better.
-@external(javascript, "./ffi/browser_ffi.mjs", "getElementById")
-fn get_element_by_id(_id: String) -> String {
-  panic as "Not supported in Erlang"
+fn update_client_count_effect(lv_hook: lissome.LiveViewHook, count: Int) {
+  live_view.push_event(
+    lv_hook:,
+    event: "update-client-count",
+    payload: count,
+    on_reply: ServerReply,
+  )
 }

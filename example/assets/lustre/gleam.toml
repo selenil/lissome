@@ -15,8 +15,8 @@ version = "1.0.0"
 [dependencies]
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"
 lustre = ">= 4.6.3 and < 5.0.0"
-plinth = ">= 0.5.6 and < 1.0.0"
-gleam_json = ">= 2.3.0 and < 3.0.0"
+
+lissome = { path = "../../../src_gleam" }
 
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
