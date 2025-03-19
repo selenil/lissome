@@ -90,7 +90,7 @@ defmodule Lissome.GleamBuilder do
     if load_beam_modules? and exit_code == 0 and target == "erlang" do
       erlang_outdir =
         Mix.Project.build_path()
-        |> Path.join(opts[:erlang_outdir] || "lib/_#{gleam_app}/")
+        |> Path.join(opts[:erlang_outdir] || "lib/#{gleam_app}/")
 
       compile_and_load_erlang_modules(gleam_dir, gleam_app, erlang_outdir)
     end
@@ -144,7 +144,7 @@ defmodule Lissome.GleamBuilder do
     ebin = Path.join(outdir, "ebin") |> String.to_charlist()
     include = Path.join(outdir, "include") |> String.to_charlist()
 
-    File.mkdir_p!(outdir)
+    File.mkdir_p!(ebin)
     File.mkdir_p!(include)
 
     gleam_artefacts_path
@@ -189,8 +189,9 @@ defmodule Lissome.GleamBuilder do
       {:ok, module} ->
         if :code.is_loaded(module) do
           :code.purge(module)
-          :code.load_file(module)
         end
+
+        :code.load_file(module)
 
       _ ->
         :ok

@@ -7,7 +7,6 @@ defmodule ExampleLissome.Application do
 
   @impl true
   def start(_type, _args) do
-    :hell
     children = [
       ExampleLissomeWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:example_lissome, :dns_cluster_query) || :ignore},

@@ -17,7 +17,7 @@ config :example_lissome, ExampleLissomeWeb.Endpoint,
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:example_lissome, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:example_lissome, ~w(--watch)]},
-    gleam: {Lissome.GleamBuilder, :build_gleam, [:javascript, [watch: true]]}
+    gleam: {Lissome.GleamBuilder, :build_gleam, [[:javascript, :erlang], [watch: true]]}
   ]
 
 # ## SSL Support
