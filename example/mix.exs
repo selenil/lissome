@@ -71,7 +71,6 @@ defmodule ExampleLissome.MixProject do
       "assets.build": ["tailwind example_lissome", "esbuild example_lissome"],
       "assets.deploy": [
         "lissome.build_gleam --target javascript",
-        "lissome.build_gleam --target erlang",
         "tailwind example_lissome --minify",
         "esbuild example_lissome --minify",
         "phx.digest"
