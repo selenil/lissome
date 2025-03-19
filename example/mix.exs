@@ -7,7 +7,6 @@ defmodule ExampleLissome.MixProject do
       name: "example_lissome",
       version: "0.1.0",
       elixir: "~> 1.14",
-      erlc_paths: ["assets/lustre/build/dev/erlang/lustre_app/_gleam_artefacts"],
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
