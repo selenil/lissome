@@ -9,13 +9,14 @@ Lissome is a library to integrate the [Gleam](https://gleam.run/) frontend frame
 
 First, make sure you have the Gleam compiler installed. Instructions can be found [here](https://gleam.run/getting-started/installing/)
 
-1. Add `lissome` to your `mix.exs` file:
+1. Add `lissome` and `lustre` to your `mix.exs` file:
 
 ```elixir
 def deps do
   [
     ...,
-    {:lissome, "~> 0.3.0"},
+    {:lissome, "~> 0.3.1"},
+    {:lustre, "~> 4.6.3", app: false, manager: :rebar3}
   ]
 end
 ```
@@ -184,13 +185,14 @@ Check out the project in the `example` directory for a complete code example.
 
 ## SSR
 
-Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can do server-side rendering of Lustre without having to install Node.js. We only need to make sure we compile the Gleam project to Erlang too. For that, add the `:gleam` compiler to your list fo compilers:
+Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can do server-side rendering of Lustre without having to install Node.js. We only need to make sure we compile the Gleam project to Erlang too. For that, install Lustre in your Elixir project and add the `:gleam` compiler to your list fo compilers:
 
 ```elixir
 # mix.exs
 def project do
   [
-    compilers: Mix.compilers() ++ [:gleam]
+    compilers: Mix.compilers() ++ [:gleam],
+    deps: deps()
   ]
 end
 ```
@@ -228,6 +230,8 @@ The type your flags has must be public too. Lissome will use this type to constr
   flags_type={:my_flags_type}
 />
 ```
+
+Remember to add to your `mix.exs` file any other dependencies your Gleam project needs apart from Lustre and the Gleam standard library. You can add Gleam dependencies to Mix like any other dependency, but with the `app: false` and `manager: :rebar3` options.
 
 ## Communicating with Phoenix LiveView
 
