@@ -32,7 +32,8 @@ defmodule Lissome.MixProject do
         extras: ["README.md"],
         links: %{
           "GitHub" => @repo_url
-        }
+        },
+        filter_modules: ~r/^Elixir.*/
       ]
     ]
   end
@@ -69,7 +70,8 @@ defmodule Lissome.MixProject do
         Changelog: @repo_url <> "/blob/main/CHANGELOG.md",
         GitHub: @repo_url
       },
-      files: ~w(lib src_gleam mix.exs .formatter.exs LICENSE README.md CHANGELOG.md)
+      files:
+        ~w(lib assets src_gleam/src src_gleam/test src_gleam/gleam.toml src_gleam/manifest.toml src_gleam/README.md  mix.exs .formatter.exs LICENSE README.md CHANGELOG.md)
     ]
   end
 end
