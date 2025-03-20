@@ -4,20 +4,12 @@ defmodule Lissome.Utils do
 
   def json(data), do: JSON.encode!(data)
 
-  @doc """
-  Returns the path to the Gleam directory.
-
-  Defaults to "assets/lustre_app".
-  """
+  @doc "Returns the configured Gleam directory path (default: assets/lustre_app)"
   def gleam_dir_path do
     @gleam_dir
   end
 
-  @doc """
-  Returns the name of the Gleam app.
-
-  Defaults to "lustre_app".
-  """
+  @doc "Returns the configured Gleam app name (default: lustre_app)"
   def gleam_app do
     @gleam_app
   end
