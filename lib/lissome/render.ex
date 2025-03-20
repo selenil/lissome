@@ -10,9 +10,9 @@ defmodule Lissome.Render do
   def ssr_lustre(module_name, flags, opts \\ []) do
     Code.ensure_loaded!(module_name)
 
-    init_fn = Keyword.get(opts, :init_fn, "init") |> String.to_atom()
-    view_fn = Keyword.get(opts, :view_fn, "view") |> String.to_atom()
-    flags_type = Keyword.get(opts, :flags_type, "model") |> String.to_atom()
+    init_fn = Keyword.get(opts, :init_fn, "init")
+    view_fn = Keyword.get(opts, :view_fn, "view")
+    flags_type = Keyword.get(opts, :flags_type, "model")
     target_id = Keyword.get(opts, :target_id, "app")
     hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
 

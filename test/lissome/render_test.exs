@@ -24,9 +24,9 @@ defmodule Lissome.RenderTest do
 
   def ssr_opts do
     [
-      init_fn: "init",
-      view_fn: "view",
-      flags_type: "flags",
+      init_fn: :init,
+      view_fn: :view,
+      flags_type: :flags,
       target_id: "app",
       hrl_file_path: mock_hrl_file("gleam_mock_Flags")
     ]

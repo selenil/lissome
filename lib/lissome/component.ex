@@ -2,14 +2,13 @@ defmodule Lissome.Component do
   use Phoenix.Component
 
   alias Lissome.Render
-  alias Lissome.Utils
 
   attr(
     :name,
-    :string,
+    :atom,
     required: true,
     doc: "The name of the Gleam module to render relative to the src directory",
-    examples: ["my_lustre_app", "pages/home"]
+    examples: [:my_lustre_app, :pages@home]
   )
 
   attr(
@@ -27,22 +26,22 @@ defmodule Lissome.Component do
 
   attr(
     :init_fn,
-    :string,
-    default: "init",
+    :atom,
+    default: :init,
     doc: "The name of your Gleam function that initializes the model"
   )
 
   attr(
     :view_fn,
-    :string,
-    default: "view",
+    :atom,
+    default: :view,
     doc: "The name of your Gleam function that renders the view"
   )
 
   attr(
     :flags_type,
-    :string,
-    default: "model",
+    :atom,
+    default: :model,
     doc: "The name of your Gleam type that represents the flags your init function receives."
   )
 
@@ -71,12 +70,10 @@ defmodule Lissome.Component do
   Renders a lustre app.
   """
   def lustre(assigns) do
-    module_name = Utils.format_module_name(assigns[:name])
-
     render_code =
       if assigns[:ssr] do
         Render.ssr_lustre(
-          module_name,
+          assigns[:name],
           assigns[:flags],
           init_fn: assigns[:init_fn],
           view_fn: assigns[:view_fn],
@@ -84,7 +81,7 @@ defmodule Lissome.Component do
           target_id: assigns[:id]
         )
       else
-        Render.render_lustre(module_name, assigns[:id], assigns[:flags])
+        Render.render_lustre(assigns[:name], assigns[:id], assigns[:flags])
       end
 
     assigns = assign(assigns, :render_code, render_code)

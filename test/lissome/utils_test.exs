@@ -2,16 +2,6 @@ defmodule Lissome.UtilsTest do
   use LissomeCase, async: true
   alias Lissome.Utils
 
-  describe "format_module_name/1" do
-    test "converts simple module name" do
-      assert Utils.format_module_name("home") == :home
-    end
-
-    test "converts nested module path" do
-      assert Utils.format_module_name("nested/nested/nested/mod") == :nested@nested@nested@mod
-    end
-  end
-
   describe "extract_gleam_app_name/1" do
     test "extracts app name from gleam.toml" do
       tmp_dir = System.tmp_dir!() |> Path.join("lissome_test")
