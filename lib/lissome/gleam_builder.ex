@@ -95,7 +95,7 @@ defmodule Lissome.GleamBuilder do
     end
 
     if watch? and Code.ensure_loaded?(Lissome.GleamReloader) do
-      Lissome.GleamReloader.register_target(target, gleam_dir)
+      apply(Lissome.GleamReloader, :register_target, [target, gleam_dir])
     end
 
     :ok
