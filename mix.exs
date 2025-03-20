@@ -1,7 +1,7 @@
 defmodule Lissome.MixProject do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.3.0"
 
   @repo_url "https://github.com/selenil/lissome"
 
@@ -66,7 +66,7 @@ defmodule Lissome.MixProject do
         Changelog: @repo_url <> "/blob/main/CHANGELOG.md",
         GitHub: @repo_url
       },
-      files: ~w(lib mix.exs .formatter.exs LICENSE README.md CHANGELOG.md)
+      files: ~w(lib src_gleam mix.exs .formatter.exs LICENSE README.md CHANGELOG.md)
     ]
   end
 end
