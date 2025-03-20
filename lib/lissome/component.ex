@@ -87,9 +87,7 @@ defmodule Lissome.Component do
         Render.render_lustre(module_name, assigns[:id], assigns[:flags])
       end
 
-    assigns =
-      assigns
-      |> assign(:render_code, render_code)
+    assigns = assign(assigns, :render_code, render_code)
 
     ~H"""
       {Phoenix.HTML.raw(@render_code)}

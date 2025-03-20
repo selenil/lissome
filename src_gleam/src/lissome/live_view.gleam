@@ -79,7 +79,7 @@ pub fn push_event_to(
   |> effect.from()
 }
 
-/// Handle an event pushed from a LiveView running on the server, using Lustre's
+/// Handles an event pushed from a LiveView running on the server, using Lustre's
 /// effect system.
 ///
 /// The `on_reply` argument takes the payload sent by the LiveView on the server

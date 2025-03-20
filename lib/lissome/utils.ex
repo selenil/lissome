@@ -23,12 +23,23 @@ defmodule Lissome.Utils do
     |> String.to_atom()
   end
 
-  def json(data), do: Elixir.JSON.encode!(data)
+  def json(data), do: JSON.encode!(data)
 
-  def gleam_build_path(),
-    do: Path.join(@gleam_dir, "build")
+  @doc """
+  Returns the path to the Gleam directory.
 
-  def get_gleam_app_from_config do
+  Defaults to "assets/lustre_app".
+  """
+  def gleam_dir_path do
+    @gleam_dir
+  end
+
+  @doc """
+  Returns the name of the Gleam app.
+
+  Defaults to "lustre_app".
+  """
+  def gleam_app do
     @gleam_app
   end
 

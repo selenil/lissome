@@ -3,7 +3,7 @@ defmodule Lissome.GleamType do
   Helpers to work with Gleam types and their Erlang representations.
   """
 
-  import Lissome.Utils
+  alias Lissome.Utils
 
   @typedoc """
   The GleamType struct type.
@@ -70,7 +70,7 @@ defmodule Lissome.GleamType do
         build_hrl_file_path(
           type,
           module,
-          opts[:gleam_app] || get_gleam_app_from_config()
+          opts[:gleam_app] || Utils.gleam_app()
         )
 
     values =
@@ -135,8 +135,8 @@ defmodule Lissome.GleamType do
     type_string = type |> Atom.to_string() |> String.capitalize()
 
     Path.join([
-      gleam_build_path(),
-      "dev/erlang",
+      Utils.gleam_dir_path(),
+      "build/dev/erlang",
       gleam_app,
       "include/#{module}_#{type_string}.hrl"
     ])
