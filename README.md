@@ -191,8 +191,7 @@ Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can 
 # mix.exs
 def project do
   [
-    compilers: Mix.compilers() ++ [:gleam],
-    deps: deps()
+    compilers: Mix.compilers() ++ [:gleam]
   ]
 end
 ```
@@ -228,6 +227,7 @@ The type your flags has must be public too. Lissome will use this type to constr
   init_fn={:my_init_function}
   view_fn={:my_view_function}
   flags_type={:my_flags_type}
+  flags={...}
 />
 ```
 
@@ -309,7 +309,7 @@ Gleam compiles types constructors that do not have specific fields, like `Ok(a)`
 <.lustre
   module={:hello}
   ssr={true}
-  flags={name: Lissome.GleamType.from_value(:some, "Jhon")}
+  flags={%{name: Lissome.GleamType.from_value(:some, "Jhon")}}
 >
 ```
 
@@ -319,11 +319,11 @@ When a type has multiple fields, Gleam compiles it to an [Erlang record](https:/
 <.lustre
   module={:hello}
   ssr={true}
-  flags={person: Lissome.GleamType.from_record(
+  flags={%{person: Lissome.GleamType.from_record(
     :person,
     :hello,
     %{name: "Jhon", age: 30}
-  )}
+  )}}
 >
 ```
 
