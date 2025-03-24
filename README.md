@@ -138,8 +138,8 @@ pub fn main() {
 Now, inside `HEEX` we can render it using the `.lustre` component:
 
 ```elixir
-defmodule MyApp.MyLiveView do
-  use MyApp, :live_view
+defmodule MyAppWeb.MyLiveView do
+  use MyAppWeb, :live_view
 
   import Lissome.Component
 
@@ -252,7 +252,7 @@ type Msg {
   ServerReply(live_view.LiveViewPushResponse)
 }
 
-pub fn init(flags, lv_hook: LiveViewHook) {
+pub fn init(flags, lv_hook: lissome.LiveViewHook) {
   let eff = live_view.handle_event(
     lv_hook: lv_hook,
     event: "send-name",
@@ -262,7 +262,7 @@ pub fn init(flags, lv_hook: LiveViewHook) {
   #(flags, eff)
 }
 
-pub fn update(model, msg, lv_hook: LiveViewHook) {
+pub fn update(model, msg, lv_hook: lissome.LiveViewHook) {
   case msg {
     ServerUpdatedName(name) -> #(Model(..model, name:), effect.none())
     UserUpdatedEmail(email) -> {
@@ -270,7 +270,7 @@ pub fn update(model, msg, lv_hook: LiveViewHook) {
         lv_hook: lv_hook,
         event: "update-email",
         payload: email,
-        on_reply: Nothing
+        on_reply: ServerReply
       )
 
       #(Model(..model, email:), eff)
@@ -286,7 +286,7 @@ pub fn view(model) {
   //...
 }
 
-pub fn main(hook: LiveViewHook) {
+pub fn main(hook: lissome.LiveViewHook) {
   let flags = Model("John", "jhon@gmail.com")
   let app = lissome.application(init, update, view, hook)
   let assert Ok(_) = lustre.start(app, "#app", flags)
