@@ -54,7 +54,7 @@ defmodule Lissome.MixProject do
     [
       {:phoenix_live_view, "~> 1.0.0"},
       {:gleam_stdlib, "~> 0.44", app: false},
-      {:lustre, "~> 4.6.4", app: false},
+      {:lustre, "~> 4.6.3", app: false},
       {:file_system, "~> 0.3 or ~> 1.0", optional: true},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
