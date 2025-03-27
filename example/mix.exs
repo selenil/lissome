@@ -54,6 +54,7 @@ defmodule ExampleLissome.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:lissome, path: "../"},
+      {:lustre_app, path: "assets/lustre"}
     ]
   end
 
