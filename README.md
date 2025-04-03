@@ -185,7 +185,7 @@ Check out the project in the `example` directory for a complete code example.
 
 ## SSR
 
-Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can do server-side rendering of Lustre without having to install Node.js. We only need to make sure we compile the Gleam project to Erlang too. For that, install Lustre in your Elixir project and add the `:gleam` compiler to your list fo compilers:
+Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can do server-side rendering of Lustre without having to install Node.js. We only need to make sure we compile the Gleam project to Erlang too. For that, install Lustre in your Elixir project and add the `:gleam` compiler to your list of compilers:
 
 ```elixir
 # mix.exs

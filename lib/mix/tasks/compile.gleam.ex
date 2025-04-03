@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Compile.Gleam do
   use Mix.Task.Compiler
 
   @moduledoc """
-  Compiles Gleam source files BEAM files.
+  Compiles Gleam source files to BEAM files.
 
   This task compiles your Gleam source files in two steps:
     1. First, it uses `gleam build` command to convert Gleam files into Erlang (`.erl`) files
