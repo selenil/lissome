@@ -2,8 +2,8 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/int
 import gleam/option.{type Option, None, Some}
-import lissome
-import lissome/live_view
+import glissome
+import glissome/live_view
 import lustre
 import lustre/attribute
 import lustre/effect
@@ -21,7 +21,7 @@ pub type Model {
   Model(client_count: Int, server_count: Option(Int), light_on: Bool)
 }
 
-pub fn init(flags: Flags, lv_hook: lissome.LiveViewHook) {
+pub fn init(flags: Flags, lv_hook: glissome.LiveViewHook) {
   let model =
     Model(
       client_count: inital_count,
@@ -54,7 +54,7 @@ pub type Msg {
   ServerReply(live_view.LiveViewPushResponse)
 }
 
-pub fn update(model: Model, msg: Msg, lv_hook: lissome.LiveViewHook) {
+pub fn update(model: Model, msg: Msg, lv_hook: glissome.LiveViewHook) {
   case msg {
     Increment -> {
       let count = model.client_count + 1
@@ -182,24 +182,24 @@ pub fn view(model: Model) {
   ])
 }
 
-pub fn main(hook: lissome.LiveViewHook) {
+pub fn main(hook: glissome.LiveViewHook) {
   let decoder = {
     use server_count <- decode.field("server_count", decode.int)
     decode.success(Flags(server_count: Some(server_count)))
   }
 
-  let flags = case lissome.get_flags(id: "ls-model", using: decoder) {
+  let flags = case glissome.get_flags(id: "ls-model", using: decoder) {
     Ok(flags) -> flags
     Error(_) -> Flags(server_count: None)
   }
 
-  let app = lissome.application(init, update, view, hook)
+  let app = glissome.application(init, update, view, hook)
   let assert Ok(_) = lustre.start(app, "#app", flags)
 
   Nil
 }
 
-fn update_client_count_effect(lv_hook: lissome.LiveViewHook, count: Int) {
+fn update_client_count_effect(lv_hook: glissome.LiveViewHook, count: Int) {
   live_view.push_event(
     lv_hook:,
     event: "update-client-count",

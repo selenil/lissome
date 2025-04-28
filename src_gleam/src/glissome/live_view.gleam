@@ -1,5 +1,5 @@
 import gleam/dynamic.{type Dynamic}
-import lissome.{type Error, type LiveViewHook, NotABrowser}
+import glissome.{type Error, type LiveViewHook, NotABrowser}
 import lustre/effect
 
 /// A response from the LiveView in the server to an event
@@ -100,7 +100,7 @@ pub fn handle_event(
   |> effect.from()
 }
 
-@external(javascript, "../lissome_ffi.mjs", "pushEvent")
+@external(javascript, "../glissome_ffi.mjs", "pushEvent")
 fn do_push_event(
   _hook: LiveViewHook,
   _evt: String,
@@ -110,7 +110,7 @@ fn do_push_event(
   Error(NotABrowser)
 }
 
-@external(javascript, "../lissome_ffi.mjs", "pushEventTo")
+@external(javascript, "../glissome_ffi.mjs", "pushEventTo")
 fn do_push_event_to(
   _hook: LiveViewHook,
   _query_selector: String,
@@ -121,7 +121,7 @@ fn do_push_event_to(
   Error(NotABrowser)
 }
 
-@external(javascript, "../lissome_ffi.mjs", "handleEvent")
+@external(javascript, "../glissome_ffi.mjs", "handleEvent")
 fn do_handle_event(
   _hook: LiveViewHook,
   _evt: String,
