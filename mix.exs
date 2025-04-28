@@ -11,10 +11,6 @@ defmodule Lissome.MixProject do
       name: "Lissome",
       version: @version,
       elixir: "~> 1.18",
-      erlc_paths: [
-        "src_gleam/build/packages/gleam_stdlib/src",
-        "src_gleam/build/packages/lustre/src"
-      ],
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -53,7 +49,6 @@ defmodule Lissome.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 1.0.0"},
-      {:gleam_stdlib, ">= 0.53.0 and < 2.0.0", app: false},
       {:lustre, "~> 4.6.3", app: false},
       {:file_system, "~> 0.3 or ~> 1.0", optional: true},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
