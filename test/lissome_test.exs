@@ -6,13 +6,13 @@ defmodule LissomeTest do
   end
 
   test "can call code from the Lissome Gleam package" do
-    assert Code.ensure_loaded?(:lissome)
-    assert Code.ensure_loaded?(:lissome@live_view)
+    assert Code.ensure_loaded?(:glissome)
+    assert Code.ensure_loaded?(:glissome@live_view)
 
-    assert :lissome.get_flags("mock-id", "mock-decoder") == {:error, :not_a_browser}
+    assert :glissome.get_flags("mock-id", "mock-decoder") == {:error, :not_a_browser}
 
     push_event_result =
-      :lissome@live_view.push_event(
+      :glissome@live_view.push_event(
         "mock-hook",
         "mock-event",
         nil,
@@ -20,7 +20,7 @@ defmodule LissomeTest do
       )
 
     push_event_to_result =
-      :lissome@live_view.push_event_to(
+      :glissome@live_view.push_event_to(
         "mock-hook",
         "mock-query-selector",
         "mock-event",
@@ -29,7 +29,7 @@ defmodule LissomeTest do
       )
 
     handle_event_result =
-      :lissome@live_view.handle_event(
+      :glissome@live_view.handle_event(
         "mock-hook",
         "mock-event",
         fn _ -> nil end
