@@ -20,7 +20,6 @@ defmodule Lissome do
   # build gleam package at compile time
   Lissome.GleamBuilder.build_gleam(
     :erlang,
-    gleam_dir: @gleam_package_path,
-    erlang_outdir: "lib/lissome/"
+    gleam_dir: @gleam_package_path
   )
 end
