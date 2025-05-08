@@ -53,6 +53,7 @@ defmodule ExampleLissome.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
+      {:lustre, "~> 5.0.2", app: false, manager: :rebar3},
       {:lissome, path: "../"},
     ]
   end

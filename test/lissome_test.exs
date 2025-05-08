@@ -37,7 +37,7 @@ defmodule LissomeTest do
 
     assert Enum.all?(
              [push_event_result, push_event_to_result, handle_event_result],
-             &(is_tuple(&1) && tuple_size(&1) == 2 && elem(&1, 0) == :effect)
+             &(is_tuple(&1) && tuple_size(&1) == 4 && elem(&1, 0) == :effect)
            )
   end
 end
