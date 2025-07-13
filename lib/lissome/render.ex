@@ -16,15 +16,7 @@ defmodule Lissome.Render do
     target_id = Keyword.get(opts, :target_id, "app")
     hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
 
-    flags_record =
-      GleamType.from_record(
-        flags_type,
-        module_name,
-        flags,
-        hrl_file_path: hrl_file_path
-      )
-
-    flags_tuple = GleamType.to_erlang_tuple(flags_record)
+    flags_tuple = process_flags(flags, module_name, flags_type, hrl_file_path: hrl_file_path)
 
     init_args =
       cond do
@@ -76,6 +68,20 @@ defmodule Lissome.Render do
     |> lustre_to_string()
   end
 
+  def process_flags(flags, module_name, flags_type, opts \\ [])
+
+  def process_flags(_flags, _module_name, nil, _opts), do: nil
+
+  def process_flags(flags, module_name, flags_type, opts) do
+    GleamType.from_record(
+      flags_type,
+      module_name,
+      flags,
+      hrl_file_path: opts[:hrl_file_path]
+    )
+    |> GleamType.to_erlang_tuple()
+  end
+
   defp wrap_in_container(module_name, target_id, children) when is_list(children) do
     :lustre@element@html.div(
       [
@@ -104,7 +110,7 @@ defmodule Lissome.Render do
     module_name |> Atom.to_string() |> String.split("@") |> List.last()
   end
 
-  defp lustre_to_string(lustre_html) do
+  def lustre_to_string(lustre_html) do
     :lustre@element.to_string(lustre_html)
   end
 end
