@@ -50,8 +50,8 @@ defmodule Lissome.RenderTest do
       flags = %{count: 42, name: "John"}
       result = Render.ssr_lustre(GleamMock, flags, ssr_opts())
 
-      assert result =~ ~s(<script type="application/json" id="ls-model">)
-      assert result =~ Elixir.JSON.encode!(flags)
+      assert result =~ ~s(<script id="ls-model" type="application/json">)
+      assert result =~ JSON.encode!(flags)
     end
   end
 
@@ -70,8 +70,8 @@ defmodule Lissome.RenderTest do
       flags = %{count: 42, light_on: true}
       result = Render.render_lustre(GleamMock, "app", flags)
 
-      assert result =~ ~s(<script type="application/json" id="ls-model">)
-      assert result =~ Elixir.JSON.encode!(flags)
+      assert result =~ ~s(<script id="ls-model" type="application/json">)
+      assert result =~ JSON.encode!(flags)
     end
   end
 end
