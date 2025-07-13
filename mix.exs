@@ -54,7 +54,10 @@ defmodule Lissome.MixProject do
     [
       {:phoenix_live_view, "~> 1.0.0"},
       {:file_system, "~> 0.3 or ~> 1.0", optional: true},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+
+      # include lustre for test only for now
+      {:lustre, "~> 5.0.0", only: :test, app: false, manager: :rebar3}
     ]
   end
 

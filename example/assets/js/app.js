@@ -22,6 +22,7 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import { createLissomeHook } from "../../../assets/lissome.mjs";
 import { main as hello } from "../lustre/build/dev/javascript/lustre_app/hello.mjs";
+import "../vendor/lustre-runtime.mjs";
 import topbar from "../vendor/topbar";
 
 const lustreModules = { hello };

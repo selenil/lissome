@@ -18,6 +18,7 @@ defmodule ExampleLissomeWeb.Router do
     pipe_through :browser
 
     live "/", LustreLive
+    get "/server-component", ServerComponentController, :index
   end
 
   # Other scopes may use custom stacks.
