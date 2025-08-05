@@ -25,6 +25,13 @@ defmodule Lissome.Component do
   )
 
   attr(
+    :entry_fn,
+    :atom,
+    default: :main,
+    doc: "The name of your Gleam function that starts the Lustre application"
+  )
+
+  attr(
     :init_fn,
     :atom,
     default: :init,
@@ -75,6 +82,7 @@ defmodule Lissome.Component do
         Render.ssr_lustre(
           assigns[:name],
           assigns[:flags],
+          entry_fn: assigns[:entry_fn],
           init_fn: assigns[:init_fn],
           view_fn: assigns[:view_fn],
           flags_type: assigns[:flags_type],

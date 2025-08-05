@@ -7,15 +7,16 @@ defmodule Lissome.Render do
 
   This function will call the `init_fn` function to get the initial model and then the `view_fn` function to get the initial view.
   """
-  def ssr_lustre(module_name, flags, opts \\ []) do
+  def ssr_lustre(module_name, flags, opts) do
     Code.ensure_loaded!(module_name)
 
-    init_fn = Keyword.get(opts, :init_fn, "init")
-    view_fn = Keyword.get(opts, :view_fn, "view")
-    flags_type = Keyword.get(opts, :flags_type, "model")
-    target_id = Keyword.get(opts, :target_id, "app")
-    hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
+    entry_fn = Keyword.fetch!(opts, :entry_fn)
+    init_fn = Keyword.fetch!(opts, :init_fn)
+    view_fn = Keyword.fetch!(opts, :view_fn)
+    flags_type = Keyword.fetch!(opts, :flags_type)
+    target_id = Keyword.fetch!(opts, :target_id)
 
+    hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
     flags_tuple = process_flags(flags, module_name, flags_type, hrl_file_path: hrl_file_path)
 
     init_args =
@@ -49,7 +50,7 @@ defmodule Lissome.Render do
     module_base_name = module_base_name(module_name)
 
     module_base_name
-    |> wrap_in_container(target_id, [view, flags_json_tag])
+    |> wrap_in_container(entry_fn, target_id, [view, flags_json_tag])
     |> lustre_to_string()
   end
 
@@ -58,13 +59,16 @@ defmodule Lissome.Render do
 
   This function just renders the root container and the script tags necessary to mount the app.
   """
-  def render_lustre(module_name, target_id, flags) do
+  def render_lustre(module_name, flags, opts) do
+    entry_fn = Keyword.fetch!(opts, :entry_fn)
+    target_id = Keyword.fetch!(opts, :target_id)
+
     module_base_name = module_base_name(module_name)
 
     flags_json_tag = flags_json_script_tag(flags)
 
     module_base_name
-    |> wrap_in_container(target_id, [flags_json_tag])
+    |> wrap_in_container(entry_fn, target_id, [flags_json_tag])
     |> lustre_to_string()
   end
 
@@ -82,11 +86,12 @@ defmodule Lissome.Render do
     |> GleamType.to_erlang_tuple()
   end
 
-  defp wrap_in_container(module_name, target_id, children) when is_list(children) do
+  defp wrap_in_container(module_name, entry_fn, target_id, children) when is_list(children) do
     :lustre@element@html.div(
       [
         :lustre@attribute.id(target_id),
         :lustre@attribute.attribute("data-name", module_name),
+        :lustre@attribute.attribute("data-entryfn", Atom.to_string(entry_fn)),
         :lustre@attribute.attribute("phx-hook", "LissomeHook"),
         :lustre@attribute.attribute("phx-update", "ignore")
       ],

@@ -1,7 +1,8 @@
 export function createLissomeHook(modules) {
   return {
     mounted() {
-      modules[this.el.dataset.name]?.(this);
+      const entryFn = this.el.dataset.entryfn
+      modules[this.el.dataset.name][entryFn]?.(this)
     },
-  };
+  }
 }
