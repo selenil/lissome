@@ -52,15 +52,15 @@ Lissome ships with its own gleam package that contains utilities functions to in
 lissome = { path = "path/to/deps/lissome/src_gleam" }
 ```
 
-3. Register a hook with the name `LissomeHook` in your `LiveSocket` instance using the `createLissomeHook` function from Lissome. This function takes an object containing the Gleam modules you want to render as an argument. The keys must be the name of the modules, in lowercase, and the values the functions responsables to start the Lustre app in each of those modules (this is typically the `main` function).
+3. Register a hook with the name `LissomeHook` in your `LiveSocket` instance using the `createLissomeHook` function from Lissome. This function takes an object containing the Gleam modules you want to render as an argument. The keys must be the name of the modules, in lowercase, and the values the modules themselves.
 
 ```javascript
 // app.js
 import { createLissomeHook } from "path/to/deps/lissome/assets/lissome.mjs"
-import { main as hello_main } from "path/to/my_gleam_project/build/dev/javascript/my_gleam_app/hello.mjs"
-import { main as about_main } from "path/to/my_gleam_project/build/dev/javascript/my_gleam_app/pages/about.mjs"
+import * as hello from "path/to/my_gleam_project/build/dev/javascript/my_gleam_app/hello.mjs"
+import * as about from "path/to/my_gleam_project/build/dev/javascript/my_gleam_app/pages/about.mjs"
 
-const lustreModules = { hello: hello_main, about: about_main }
+const lustreModules = { hello, about }
 
 let liveSocket = new LiveSocket("/live", Socket, {
   ...,
@@ -159,6 +159,8 @@ defmodule MyAppWeb.MyLiveView do
   end
 end
 ```
+
+Lissome will look for a function called `main` in your Gleam module and then it will call it to start the Lustre application. If you want to use another function in your Gleam module for this, you can specify which function will be called by passing the name of the desired function as an atom to the `entry_fn` attribute of the `.lustre` component.
 
 Lissome will encode the flags passed from the server as a json object in a script tag with the id `ls-model`. We can retrieve the flags from Gleam using the `lissome.get_flags` helper:
 

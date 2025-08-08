@@ -1,6 +1,6 @@
-defmodule Lissome.RenderTest do
+defmodule Lissome.LustreTest do
   use LissomeCase, async: true
-  alias Lissome.Render
+  alias Lissome.Lustre
 
   # Create a simple test module to use in our tests
   defmodule GleamMock do
@@ -19,24 +19,31 @@ defmodule Lissome.RenderTest do
     end
 
     # the mock module get compiled to a module name like this
-    def module_name, do: "Elixir.Lissome.RenderTest.GleamMock"
+    def module_name, do: "Elixir.Lissome.LustreTest.GleamMock"
   end
 
-  def ssr_opts do
+  def render_opts do
     [
-      init_fn: :init,
-      view_fn: :view,
-      flags_type: :flags,
-      target_id: "app",
-      hrl_file_path: mock_hrl_file("gleam_mock_Flags")
+      entry_fn: :main,
+      target_id: "app"
     ]
   end
 
-  describe "ssr_lustre/3" do
+  def ssr_opts do
+    render_opts() ++
+      [
+        init_fn: :init,
+        view_fn: :view,
+        flags_type: :flags,
+        hrl_file_path: mock_hrl_file("gleam_mock_Flags")
+      ]
+  end
+
+  describe "server_render/3" do
     test "renders initial HTML with model and flags" do
       flags = %{count: 42, name: "John"}
 
-      result = Render.ssr_lustre(GleamMock, flags, ssr_opts())
+      result = Lustre.server_render(GleamMock, flags, ssr_opts())
 
       assert is_binary(result)
       assert result =~ "Count: 42"
@@ -48,17 +55,17 @@ defmodule Lissome.RenderTest do
 
     test "includes flags JSON script tag" do
       flags = %{count: 42, name: "John"}
-      result = Render.ssr_lustre(GleamMock, flags, ssr_opts())
+      result = Lustre.server_render(GleamMock, flags, ssr_opts())
 
       assert result =~ ~s(<script id="ls-model" type="application/json">)
       assert result =~ JSON.encode!(flags)
     end
   end
 
-  describe "render_lustre/3" do
+  describe "render/3" do
     test "renders container without initial content" do
       flags = %{count: 42, light_on: true}
-      result = Render.render_lustre(GleamMock, "app", flags)
+      result = Lustre.render(GleamMock, flags, render_opts())
 
       assert is_binary(result)
       assert result =~ ~s(id="app")
@@ -68,7 +75,7 @@ defmodule Lissome.RenderTest do
 
     test "includes flags JSON script tag" do
       flags = %{count: 42, light_on: true}
-      result = Render.render_lustre(GleamMock, "app", flags)
+      result = Lustre.render(GleamMock, flags, render_opts())
 
       assert result =~ ~s(<script id="ls-model" type="application/json">)
       assert result =~ JSON.encode!(flags)
