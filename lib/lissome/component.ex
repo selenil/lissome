@@ -1,7 +1,7 @@
 defmodule Lissome.Component do
   use Phoenix.Component
 
-  alias Lissome.Render
+  alias Lissome.Lustre
 
   attr(
     :name,
@@ -79,7 +79,7 @@ defmodule Lissome.Component do
   def lustre(assigns) do
     render_code =
       if assigns[:ssr] do
-        Render.ssr_lustre(
+        Lustre.server_render(
           assigns[:name],
           assigns[:flags],
           entry_fn: assigns[:entry_fn],
@@ -89,7 +89,12 @@ defmodule Lissome.Component do
           target_id: assigns[:id]
         )
       else
-        Render.render_lustre(assigns[:name], assigns[:id], assigns[:flags])
+        Lustre.render(
+          assigns[:name],
+          assigns[:flags],
+          entry_fn: assigns[:entry_fn],
+          target_id: assigns[:target_id]
+        )
       end
 
     assigns = assign(assigns, :render_code, render_code)
