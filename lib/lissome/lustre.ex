@@ -59,7 +59,7 @@ defmodule Lissome.Lustre do
 
     flags_opts =
       (opts[:hrl_file_path] && [hrl_file_path: opts[:hrl_file_path]]) ||
-        [gleam_dir: Utils.gleam_dir_path()]
+        [gleam_dir: Utils.gleam_dir_path(), gleam_app: Utils.gleam_app()]
 
     flags_tuple =
       process_flags(
@@ -173,7 +173,7 @@ defmodule Lissome.Lustre do
         :lustre@attribute.type_("application/json"),
         :lustre@attribute.id(flags_json_tag_id())
       ],
-      Utils.json(flags)
+      JSON.encode!(flags)
     )
   end
 

@@ -7,8 +7,6 @@ defmodule Lissome.GleamType do
   in lowercase as an atom. For example, to pass `None` use `:none`.
   """
 
-  alias Lissome.Utils
-
   @typedoc """
   The GleamType struct type.
   """
@@ -73,9 +71,11 @@ defmodule Lissome.GleamType do
   ## Options
 
     * `:hrl_file_path` - Path to the .hrl file where the record is defined. Defaults to `{gleam_dir}/build/dev/erlang/{gleam_app}/{module}_{capitalized_type}.hrl`, where:
-      - `gleam_dir` is the value of `:gleam_dir` option.
+      - `gleam_dir` is the value of the `:gleam_dir` option.
+      - `gleam_app` is the name of the `:gleam_app` option.
       - `capitalized_type` is the name of the type but with its first character in uppercase.
     * `:gleam_dir` - Path to a Gleam project from where the type is defined. This option is required if the `:hrl_file_path` option is not given.
+    * `:gleam_app` - Name of the Gleam application where the type is defined. This option is required if the `:hrl_file_path` option is not given.
 
   ## Examples
 
@@ -88,7 +88,8 @@ defmodule Lissome.GleamType do
         build_hrl_file_path(
           type,
           module,
-          Keyword.fetch!(opts, :gleam_dir)
+          Keyword.fetch!(opts, :gleam_dir),
+          Keyword.fetch!(opts, :gleam_app)
         )
 
     values =
@@ -146,9 +147,8 @@ defmodule Lissome.GleamType do
 
   defp prepend_type(value, type), do: [type | List.wrap(value)]
 
-  defp build_hrl_file_path(type, module, gleam_dir) do
+  defp build_hrl_file_path(type, module, gleam_dir, gleam_app) do
     type_string = type |> Atom.to_string() |> String.capitalize()
-    gleam_app = Utils.gleam_app(gleam_dir)
 
     Path.join([
       gleam_dir,
