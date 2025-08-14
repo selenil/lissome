@@ -5,18 +5,6 @@ defmodule Lissome do
 
   @gleam_package_path File.cwd!() |> Path.join("src_gleam") |> Path.expand()
 
-  defimpl JSON.Encoder, for: Lissome.GleamType do
-    def encode(%Lissome.GleamType{values: values, record?: true}, opts) do
-      values
-      |> Lissome.GleamType.flat_tuple_map()
-      |> JSON.Encoder.Map.encode(opts)
-    end
-
-    def encode(%Lissome.GleamType{values: value}, opts) do
-      JSON.Encoder.encode(value, opts)
-    end
-  end
-
   # build gleam package at compile time
   Lissome.GleamBuilder.build_gleam(
     :erlang,

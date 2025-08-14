@@ -3,8 +3,8 @@ defmodule Lissome.Lustre do
   Module for rendering [Lustre](https://hexdocs.pm/lustre/index.html) applications.
   """
 
-  alias Lissome.Utils
   alias Lissome.GleamType
+  alias Lissome.Utils
 
   @flags_json_tag_id Application.compile_env(:lissome, :flags_json_tag_id, "ls-model")
 
@@ -57,8 +57,17 @@ defmodule Lissome.Lustre do
     flags_type = Keyword.fetch!(opts, :flags_type)
     target_id = Keyword.fetch!(opts, :target_id)
 
-    hrl_file_path = Keyword.get(opts, :hrl_file_path, nil)
-    flags_tuple = process_flags(flags, module_name, flags_type, hrl_file_path: hrl_file_path)
+    flags_opts =
+      (opts[:hrl_file_path] && [hrl_file_path: opts[:hrl_file_path]]) ||
+        [gleam_dir: Utils.gleam_dir_path()]
+
+    flags_tuple =
+      process_flags(
+        flags,
+        module_name,
+        flags_type,
+        flags_opts
+      )
 
     init_args =
       cond do
