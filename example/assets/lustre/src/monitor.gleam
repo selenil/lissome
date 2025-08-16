@@ -142,20 +142,32 @@ fn decode_to_int(value: dynamic.Dynamic) {
   decode.run(value, decode.int)
 }
 
-@external(erlang, "lissome_ffi", "erlang_version")
-fn erlang_version() -> dynamic.Dynamic
+@external(erlang, "Elixir.LissomeFFI", "erlang_version")
+fn erlang_version() -> dynamic.Dynamic {
+  panic as "Not valid outside Erlang"
+}
 
-@external(erlang, "lissome_ffi", "atoms_count")
-fn atom_count() -> dynamic.Dynamic
+@external(erlang, "Elixir.LissomeFFI", "atoms_count")
+fn atom_count() -> dynamic.Dynamic {
+  panic as "Not valid outside Erlang"
+}
 
-@external(erlang, "lissome_ffi", "ports_count")
-fn port_count() -> dynamic.Dynamic
+@external(erlang, "Elixir.LissomeFFI", "ports_count")
+fn port_count() -> dynamic.Dynamic {
+  panic as "Not valid outside Erlang"
+}
 
-@external(erlang, "lissome_ffi", "processes_count")
-fn process_count() -> dynamic.Dynamic
+@external(erlang, "Elixir.LissomeFFI", "processes_count")
+fn process_count() -> dynamic.Dynamic {
+  panic as "Not valid outside Erlang"
+}
 
-@external(erlang, "lissome_ffi", "uptime")
-fn uptime() -> dynamic.Dynamic
+@external(erlang, "Elixir.LissomeFFI", "uptime")
+fn uptime() -> dynamic.Dynamic {
+  panic as "Not valid outside Erlang"
+}
 
-@external(erlang, "lissome_ffi", "total_memory_usage")
-fn total_memory_usage() -> dynamic.Dynamic
+@external(erlang, "Elixir.LissomeFFI", "total_memory_usage")
+fn total_memory_usage() -> dynamic.Dynamic {
+  panic as "Not valid outside Erlang"
+}
