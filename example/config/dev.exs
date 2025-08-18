@@ -48,7 +48,8 @@ config :example_lissome, ExampleLissomeWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"lib/example_lissome_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/example_lissome_web/(controllers|live|components)/.*(ex|heex)$",
+      ~r"assets/lustre/.*(erl|ex)$"
     ]
   ]
 
