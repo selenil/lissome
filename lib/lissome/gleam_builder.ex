@@ -163,11 +163,6 @@ defmodule Lissome.GleamBuilder do
     File.mkdir_p!(include)
 
     gleam_artefacts_path
-    |> Path.join("**/*.ex")
-    |> Path.wildcard()
-    |> Enum.each(&Code.require_file(&1))
-
-    gleam_artefacts_path
     |> Path.join("**/*.erl")
     |> Path.wildcard()
     |> Enum.reject(&String.ends_with?(&1, "@@compile.erl"))
