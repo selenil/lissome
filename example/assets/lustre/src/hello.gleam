@@ -73,10 +73,7 @@ pub fn update(model: Model, msg: Msg, lv_hook: lissome.LiveViewHook) {
         decode.success(server_count)
       }
 
-      let server_count = case decode.run(count, decoder) {
-        Ok(count) -> Some(count)
-        Error(_) -> None
-      }
+      let server_count = decode.run(count, decoder) |> option.from_result()
 
       #(Model(..model, server_count: server_count), effect.none())
     }

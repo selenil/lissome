@@ -187,7 +187,7 @@ defmodule Lissome.LustreServerComponent do
 
   use Phoenix.Component
 
-  alias Lissome.Render
+  alias Lissome.Lustre
 
   defmacro __using__(_opts) do
     quote do
@@ -252,7 +252,7 @@ defmodule Lissome.LustreServerComponent do
 
     render_code =
       :lustre@server_component.element(attrs, [])
-      |> Render.lustre_to_string()
+      |> Lustre.element_to_string()
 
     assigns = assign(assigns, :render_code, render_code)
 
@@ -298,20 +298,11 @@ defmodule Lissome.LustreServerComponent do
     entry_fn = opts[:entry_fn] || :component
     flags_type = opts[:flags_type] || nil
 
-    flags = Render.process_flags(flags, module, flags_type)
+    flags = Lustre.process_flags(flags, module, flags_type)
 
-    started =
-      module
-      |> apply(entry_fn, [])
-      |> :lustre.start_server_component(flags)
-
-    case started do
-      {:ok, _server_component} = success ->
-        success
-
-      {:error, _reason} = error ->
-        error
-    end
+    module
+    |> apply(entry_fn, [])
+    |> :lustre.start_server_component(flags)
   end
 
   @doc """
