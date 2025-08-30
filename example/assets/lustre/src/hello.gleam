@@ -14,17 +14,15 @@ import lustre/event
 
 const inital_count = 10
 
-pub type Flags {
-  Flags(server_count: Option(Int))
-}
+pub type Flags =
+  Option(Int)
 
 pub type Model {
   Model(client_count: Int, server_count: Option(Int))
 }
 
 pub fn init(flags: Flags, lv_hook: lissome.LiveViewHook) {
-  let model =
-    Model(client_count: inital_count, server_count: flags.server_count)
+  let model = Model(client_count: inital_count, server_count: flags)
 
   let effects = [
     live_view.push_event(
@@ -148,15 +146,8 @@ pub fn view(model: Model) {
 }
 
 pub fn main(hook: lissome.LiveViewHook) {
-  let decoder = {
-    use server_count <- decode.field("server_count", decode.int)
-    decode.success(Flags(server_count: Some(server_count)))
-  }
-
-  let flags = case lissome.get_flags(id: "ls-model", using: decoder) {
-    Ok(flags) -> flags
-    Error(_) -> Flags(server_count: None)
-  }
+  let flags =
+    lissome.get_flags(id: "ls-model", using: decode.int) |> option.from_result()
 
   let app = lissome.application(init, update, view, hook)
 

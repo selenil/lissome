@@ -13,8 +13,8 @@ defmodule Lissome.Component do
 
   attr(
     :flags,
-    :map,
-    default: %{},
+    :any,
+    default: nil,
     doc: "Initial values to pass to the Gleam module",
     examples: [
       %{
@@ -48,7 +48,7 @@ defmodule Lissome.Component do
   attr(
     :flags_type,
     :atom,
-    default: :model,
+    default: nil,
     doc: "The name of your Gleam type that represents the flags your init function receives."
   )
 

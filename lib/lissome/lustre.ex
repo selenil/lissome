@@ -42,8 +42,8 @@ defmodule Lissome.Lustre do
   - `:entry_fn` - The function in the Gleam module that will be called to start the Lustre application (usually `:main`).
   - `:init_fn` - The function in the Gleam module to initialize the model (usually `:init`).
   - `:view_fn` - The function in the Gleam module to render the view from a model (usually `:view`).
-  - `:flags_type` - The Gleam type of the flags passed. Defaults to `nil`,
-  meaning the application does not take any flags.
+  - `:flags_type` - The Gleam type of the flags passed. It should be `nil` if the type
+  of the flags passed is not compiled to an Erlang record by the Gleam compiler.
   - `:hrl_file_path` - Optional path to the `.hrl` file where the Erlang record
   corresponding to the flags type is defined.
   - `:target_id` - The DOM id where the Lustre application should hydrate.
@@ -61,7 +61,7 @@ defmodule Lissome.Lustre do
       (opts[:hrl_file_path] && [hrl_file_path: opts[:hrl_file_path]]) ||
         [gleam_dir: Utils.gleam_dir_path(), gleam_app: Utils.gleam_app()]
 
-    flags_tuple =
+    processed_flags =
       process_flags(
         flags,
         module_name,
@@ -72,10 +72,10 @@ defmodule Lissome.Lustre do
     init_args =
       cond do
         function_exported?(module_name, init_fn, 1) ->
-          [flags_tuple]
+          [processed_flags]
 
         function_exported?(module_name, init_fn, 2) ->
-          [flags_tuple, nil]
+          [processed_flags, nil]
 
         true ->
           raise "The init function must be avaliable and have arity 1 or 2"
@@ -107,12 +107,12 @@ defmodule Lissome.Lustre do
   @doc """
   Prepares flags to be passed to a Lustre application.
 
-  This function receives the flags Gleam type as an atom and then constructs the
-  correct Erlang record using the values passed.
+  If `flags_type` is `nil`, then this function returns `flags` unchanged unless `flags` are
+  a `Lissome.GleamType` struct, in that case, it convert `flags` to the corresponding tuple using
+  `Lissome.GleamType.to_erlang_tuple/1` before returning it.
 
-  If the flags type is `nil`, then this function return `nil` too, meaning that the application
-  does not takes any flags. Otherwise, returns a tuple with all the flags values
-  in the order the Lustre application expects them.
+  If `flags_type` is not `nil`, then this function returns an Erlang record constructed using `flags_type`
+  and the `flags` as the values.
 
   ## Options
 
@@ -125,10 +125,18 @@ defmodule Lissome.Lustre do
 
       iex> Lissome.Lustre.process_flags(%{count: 10}, :my_gleam_mod, nil)
       nil
+
+      iex> flags = %Lissome.GleamType{name: :ok, values: :val}
+      ...> Lissome.Lustre.process_flags(flags, :my_gleam_mod, nil)
+      {:ok, :val}
   """
   def process_flags(flags, module_name, flags_type, opts \\ [])
 
-  def process_flags(_flags, _module_name, nil, _opts), do: nil
+  def process_flags(%GleamType{} = flags, _module_name, nil, _opts) do
+    GleamType.to_erlang_tuple(flags)
+  end
+
+  def process_flags(flags, _module_name, nil, _opts), do: flags
 
   def process_flags(flags, module_name, flags_type, opts) do
     GleamType.from_record(
