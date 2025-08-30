@@ -99,43 +99,55 @@ defmodule Lissome.GleamTypeTest do
     end
   end
 
-  describe "flat_tuple_map/1" do
-    test "flattens simple tuple map" do
-      input = %{name: {0, "John"}, age: {1, 30}}
-      expected = %{name: "John", age: 30}
-      assert expected == GleamType.flat_tuple_map(input)
+  describe "flat_values/1" do
+    test "flattens a simple GleamType struct" do
+      input = %GleamType{name: :some, values: %{maybe: {0, :not_none}}}
+      expected = %{maybe: :not_none}
+      assert expected == GleamType.flat_values(input)
     end
 
-    test "handles deeply nested structures" do
+    test "handles deeply nested structs" do
+      experience = %GleamType{
+        name: :experience,
+        values: %{
+          years: {0, 1},
+          location: {1, "some company"}
+        },
+        record?: true
+      }
+
       skill = %GleamType{
         name: :skill,
         values: %{
-          skill_name: {0, "coding"},
-          level: {1, "expert"}
-        }
+          name: {0, :coding},
+          level: {1, :expert},
+          experience: {2, experience}
+        },
+        record?: true
       }
 
-      address = %GleamType{
-        name: :address,
+      input = %GleamType{
+        name: :person,
         values: %{
-          city: {0, "NY"},
-          details: {1, skill}
-        }
-      }
-
-      input = %{
-        name: {0, "John"},
-        location: {1, address}
+          name: {0, "John"},
+          skill: {1, skill}
+        },
+        record?: true
       }
 
       expected = %{
         name: "John",
-        city: "NY",
-        skill_name: "coding",
-        level: "expert"
+        skill: %{
+          name: :coding,
+          level: :expert,
+          experience: %{
+            years: 1,
+            location: "some company"
+          }
+        }
       }
 
-      assert expected == GleamType.flat_tuple_map(input)
+      assert expected == GleamType.flat_values(input)
     end
   end
 end

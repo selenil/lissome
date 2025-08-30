@@ -13,19 +13,19 @@ defmodule Lissome.TestHelpers do
   end
 
   @doc """
-   A JSON string that can be decoded successfully by
+  A JSON string that can be decoded successfully by
   `Lissome.LustreServerComponent.parse_client_message/1`.
   """
   def valid_client_message, do: ~S({"kind":1,"path":"2\n2","name":"click","event":{}})
 
   @doc """
-    An JSON string that cannot be decoded successfully by
-    `Lissome.LustreServerComponent.parse_client_message/1`.
+  A JSON string that cannot be decoded successfully by
+  `Lissome.LustreServerComponent.parse_client_message/1`.
   """
   def invalid_client_message, do: ~S({"other from": "Lustre runtime"})
 
   @doc """
-    A valid message sent from a Lustre server component to be sent to the Lustre client runtime.
+  A valid message sent from a Lustre server component to be sent to the Lustre client runtime.
   """
   def message_to_client, do: {:reconcile, 1, {:patch, 0, 0, [], []}}
 

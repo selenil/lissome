@@ -2,6 +2,7 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import gleam/int
 import gleam/option.{type Option, None, Some}
+import light_switch
 import lissome
 import lissome/live_view
 import lustre
@@ -13,21 +14,15 @@ import lustre/event
 
 const inital_count = 10
 
-pub type Flags {
-  Flags(server_count: Option(Int))
-}
+pub type Flags =
+  Option(Int)
 
 pub type Model {
-  Model(client_count: Int, server_count: Option(Int), light_on: Bool)
+  Model(client_count: Int, server_count: Option(Int))
 }
 
 pub fn init(flags: Flags, lv_hook: lissome.LiveViewHook) {
-  let model =
-    Model(
-      client_count: inital_count,
-      server_count: flags.server_count,
-      light_on: True,
-    )
+  let model = Model(client_count: inital_count, server_count: flags)
 
   let effects = [
     live_view.push_event(
@@ -49,7 +44,6 @@ pub fn init(flags: Flags, lv_hook: lissome.LiveViewHook) {
 pub type Msg {
   Increment
   Decrement
-  ToggleLight
   ServerUpdatedCount(dynamic.Dynamic)
   ServerReply(live_view.LiveViewPushResponse)
 }
@@ -70,7 +64,6 @@ pub fn update(model: Model, msg: Msg, lv_hook: lissome.LiveViewHook) {
         update_client_count_effect(lv_hook, count),
       )
     }
-    ToggleLight -> #(Model(..model, light_on: !model.light_on), effect.none())
 
     ServerUpdatedCount(count) -> {
       let decoder = {
@@ -78,10 +71,7 @@ pub fn update(model: Model, msg: Msg, lv_hook: lissome.LiveViewHook) {
         decode.success(server_count)
       }
 
-      let server_count = case decode.run(count, decoder) {
-        Ok(count) -> Some(count)
-        Error(_) -> None
-      }
+      let server_count = decode.run(count, decoder) |> option.from_result()
 
       #(Model(..model, server_count: server_count), effect.none())
     }
@@ -151,49 +141,17 @@ pub fn view(model: Model) {
         ),
       ]),
     ]),
-    html.div([attribute.class("flex flex-col items-center gap-4 mt-8")], [
-      html.div(
-        [
-          attribute.class(
-            "w-20 h-20 rounded-full flex items-center justify-center text-lg font-medium transition-colors duration-300 "
-            <> case model.light_on {
-              True -> "bg-gleam-400 text-white shadow-lg shadow-gleam-200"
-              False -> "bg-gray-200 text-gray-600"
-            },
-          ),
-        ],
-        [
-          case model.light_on {
-            True -> html.text("ON")
-            False -> html.text("OFF")
-          },
-        ],
-      ),
-      html.button(
-        [
-          attribute.class(
-            "px-6 py-3 bg-gleam-500 text-white rounded-lg font-medium hover:bg-gleam-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gleam-400 focus:ring-offset-2",
-          ),
-          event.on_click(ToggleLight),
-        ],
-        [element.text("Toggle light")],
-      ),
-    ]),
+    light_switch.element([]),
   ])
 }
 
 pub fn main(hook: lissome.LiveViewHook) {
-  let decoder = {
-    use server_count <- decode.field("server_count", decode.int)
-    decode.success(Flags(server_count: Some(server_count)))
-  }
-
-  let flags = case lissome.get_flags(id: "ls-model", using: decoder) {
-    Ok(flags) -> flags
-    Error(_) -> Flags(server_count: None)
-  }
+  let flags =
+    lissome.get_flags(id: "ls-model", using: decode.int) |> option.from_result()
 
   let app = lissome.application(init, update, view, hook)
+
+  let assert Ok(_) = light_switch.register()
   let assert Ok(_) = lustre.start(app, "#app", flags)
 
   Nil

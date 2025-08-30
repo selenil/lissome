@@ -1,27 +1,41 @@
 defmodule Lissome.Utils do
-  @gleam_dir Application.compile_env(:lissome, :gleam_dir, "assets/lustre_app")
-  @gleam_app Application.compile_env(:lissome, :gleam_app, "lustre_app")
+  @gleam_dir Application.compile_env(:lissome, :gleam_dir)
 
-  def json(data), do: JSON.encode!(data)
+  gleam_app =
+    if @gleam_dir && File.exists?(@gleam_dir) do
+      case System.cmd(
+             "gleam",
+             ~W(export package-information --out /dev/stdout),
+             cd: @gleam_dir,
+             stderr_to_stdout: true
+           ) do
+        {output, 0} ->
+          output
+          |> JSON.decode!()
+          |> Map.fetch!("gleam.toml")
+          |> Map.fetch!("name")
 
-  @doc "Returns the configured Gleam directory path (default: assets/lustre_app)"
+        # export package-information is not available in the Gleam installation being used
+        # fallback to a regex approach
+        {_, 2} ->
+          toml = File.read!(Path.join(@gleam_dir, "gleam.toml"))
+
+          Regex.run(~r/name\s*=\s*"([^"]+)"/, toml, capture: :all_but_first)
+          |> List.first()
+      end
+    else
+      nil
+    end
+
+  @gleam_app gleam_app
+
+  @doc "Returns the directory to the configured Gleam project"
   def gleam_dir_path do
     @gleam_dir
   end
 
-  @doc "Returns the configured Gleam app name (default: lustre_app)"
+  @doc "Returns the app name of the configured Gleam project"
   def gleam_app do
     @gleam_app
-  end
-
-  # replace this with a call to the gleam export package-info
-  # command when it's added to gleam
-  def extract_gleam_app_name(gleam_dir) do
-    content =
-      gleam_dir
-      |> Path.join("gleam.toml")
-      |> File.read!()
-
-    Regex.run(~r/name = "(.*)"/, content) |> List.last()
   end
 end

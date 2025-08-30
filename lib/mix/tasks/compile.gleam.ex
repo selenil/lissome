@@ -23,6 +23,11 @@ defmodule Mix.Tasks.Compile.Gleam do
   @impl true
   def run(_) do
     app = Mix.Project.config() |> Keyword.fetch!(:app)
-    Lissome.GleamBuilder.build_gleam(:erlang, erlang_outdir: "lib/#{app}")
+
+    Lissome.GleamBuilder.build_gleam(
+      :erlang,
+      erlang_outdir: "lib/#{app}",
+      compile_package: true
+    )
   end
 end

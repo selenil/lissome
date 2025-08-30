@@ -1,7 +1,7 @@
 defmodule Lissome.Component do
   use Phoenix.Component
 
-  alias Lissome.Render
+  alias Lissome.Lustre
 
   attr(
     :name,
@@ -13,8 +13,8 @@ defmodule Lissome.Component do
 
   attr(
     :flags,
-    :map,
-    default: %{},
+    :any,
+    default: nil,
     doc: "Initial values to pass to the Gleam module",
     examples: [
       %{
@@ -22,6 +22,13 @@ defmodule Lissome.Component do
         age: 30
       }
     ]
+  )
+
+  attr(
+    :entry_fn,
+    :atom,
+    default: :main,
+    doc: "The name of your Gleam function that starts the Lustre application"
   )
 
   attr(
@@ -41,7 +48,7 @@ defmodule Lissome.Component do
   attr(
     :flags_type,
     :atom,
-    default: :model,
+    default: nil,
     doc: "The name of your Gleam type that represents the flags your init function receives."
   )
 
@@ -72,16 +79,22 @@ defmodule Lissome.Component do
   def lustre(assigns) do
     render_code =
       if assigns[:ssr] do
-        Render.ssr_lustre(
+        Lustre.server_render(
           assigns[:name],
           assigns[:flags],
+          entry_fn: assigns[:entry_fn],
           init_fn: assigns[:init_fn],
           view_fn: assigns[:view_fn],
           flags_type: assigns[:flags_type],
           target_id: assigns[:id]
         )
       else
-        Render.render_lustre(assigns[:name], assigns[:id], assigns[:flags])
+        Lustre.render(
+          assigns[:name],
+          assigns[:flags],
+          entry_fn: assigns[:entry_fn],
+          target_id: assigns[:target_id]
+        )
       end
 
     assigns = assign(assigns, :render_code, render_code)
