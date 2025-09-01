@@ -15,8 +15,8 @@ First, make sure you have the Gleam compiler installed. Instructions can be foun
 def deps do
   [
     ...,
-    {:lissome, "~> 0.3.1"},
-    {:lustre, "~> 4.6.3", app: false, manager: :rebar3}
+    {:lissome, "~> 0.4"},
+    {:lustre, "~> 5.0", app: false, manager: :rebar3}
   ]
 end
 ```
@@ -27,7 +27,7 @@ then run:
 mix deps.get
 ```
 
-2. Create a new Gleam project and add Lustre to it. You can create it anywhere, but it is recommended to create it inside the `assets` directory. By default, Lissome will search for a Gleam project in the `assets/lustre_app` directory. If you chose a different name, set the path where you Gleam project lives in the `gleam_dir` config:
+2. Create a new Gleam project and add Lustre to it. You can create it anywhere, but it is recommended to create it inside the `assets` directory. After creating it, set the path where you Gleam project lives in the `gleam_dir` config:
 
 ```bash
 gleam new my_gleam_app
@@ -39,7 +39,6 @@ gleam add lustre
 ```elixir
 # config/config.exs
 
-# if you created your Gleam project in a different location than "assets/lustre_app"
 config :lissome, :gleam_dir: "my_dir/my_gleam_app"
 ```
 
@@ -95,7 +94,7 @@ config :esbuild,
   ]
 ```
 
-6. If you plan to use Tailwind CSS inside your Gleam code, add your gleam files to the content key in the Tailwind CSS config.
+6. If you plan to use Tailwind CSS inside your Gleam code, add your Gleam files to the content key in the Tailwind CSS config.
 
 ```javascript
 // tailwind.config.js
@@ -110,7 +109,7 @@ module.exports = {
 
 ## Usage
 
-To render a Lustre app, define a Gleam module with a public function that initializes the app using either the `lustre.simple` or `lustre.application` constructor.
+To render a Lustre app, create a Gleam module with a public function that initializes the app using either the `lustre.simple` or `lustre.application` constructor.
 
 ```gleam
 //// src/hello.gleam
@@ -135,7 +134,7 @@ pub fn main() {
 }
 ```
 
-Now, inside `HEEX` we can render it using the `.lustre` component:
+Now, we can render it inside the `HEEX` template using the `.lustre` component:
 
 ```elixir
 defmodule MyAppWeb.MyLiveView do
@@ -187,7 +186,7 @@ Check out the project in the `example` directory for a complete code example.
 
 ## SSR
 
-Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can do server-side rendering of Lustre without having to install Node.js. We only need to make sure we compile the Gleam project to Erlang too. For that, install Lustre in your Elixir project and add the `:gleam` compiler to your list of compilers:
+Thanks to the ability of Gleam to compile to both Erlang and JavaScript, we can do server-side rendering of Lustre without having to install Node.js. We only need to make sure we compile the Gleam project to Erlang too. For that, add the `:gleam` compiler to your list of compilers:
 
 ```elixir
 # mix.exs
@@ -209,17 +208,9 @@ config :my_app, MyAppWeb.Endpoint,
 ]
 ```
 
-and if the name of your gleam project is different than `"lustre_app"`, register it in the `gleam_app` config:
-
-```elixir
-config :lissome, :gleam_app, "my_gleam_app"
-```
-
 Now, pass the `ssr={true}` attribute to each `.lustre` component you want to render in the server.
 
 Keep in mind that `Lissome` will call the `init` and the `view` functions of your Gleam module in order to render the initial HTML. By default `Lissome` will look for functions with that name in your module. If you happen to named them differently, you can pass to the `init_fn` attribute the name of your function responsible for initializing the model and to the `view_fn` attribute the name of your function responsible for rendering the view. Both functions must be public.
-
-The type your flags has must be public too. Lissome will use this type to construct the appropriate Erlang record. By default, the expected name for that type is `Model`. If you have a different name, pass to the `flags_type` attribute the name of your type in lowercase.
 
 ```elixir
 <.lustre
@@ -228,12 +219,22 @@ The type your flags has must be public too. Lissome will use this type to constr
   name={:hello}
   init_fn={:my_init_function}
   view_fn={:my_view_function}
+/>
+```
+
+If your flags are structured data, then you must pass to the `flags_type` attribute the name of the Gleam type that those flags have. Lissome will use this type to construct the appropriate Erlang record. 
+
+```elixir
+<.lustre 
+  id="app"
+  ssr={true}
+  name={:hello}
   flags_type={:my_flags_type}
   flags={...}
 />
 ```
 
-Remember to add to your `mix.exs` file any other dependencies your Gleam project needs apart from Lustre and the Gleam standard library. You can add Gleam dependencies to Mix like any other dependency, but with the `app: false` and `manager: :rebar3` options.
+When doing SSR, remember to add to your `mix.exs` file any other dependencies your Gleam project needs apart from Lustre and the Gleam standard library. You can add Gleam dependencies to Mix like any other dependency, but with the `app: false` and `manager: :rebar3` options.
 
 ## Communicating with Phoenix LiveView
 
@@ -311,7 +312,7 @@ Gleam compiles types constructors that do not have specific fields, like `Ok(a)`
 <.lustre
   module={:hello}
   ssr={true}
-  flags={%{name: Lissome.GleamType.from_value(:some, "Jhon")}}
+  flags={Lissome.GleamType.from_value(:some, "Jhon")}
 >
 ```
 
@@ -321,11 +322,11 @@ When a type has multiple fields, Gleam compiles it to an [Erlang record](https:/
 <.lustre
   module={:hello}
   ssr={true}
-  flags={%{person: Lissome.GleamType.from_record(
+  flags={Lissome.GleamType.from_record(
     :person,
     :hello,
     %{name: "Jhon", age: 30}
-  )}}
+  )}
 >
 ```
 
@@ -344,6 +345,6 @@ See the `Lissome.GleamType` module in the documentation for more details.
 - [x] Gleam's helpers for communicating with Phoenix LiveView and supporting Lustre's effects.
 - [x] Live reload for Gleam.
 - [x] Helpers to work with Gleam types and their Erlang representation in Elixir.
-- [ ] Support for `lustre.component` constructor.
-- [ ] Support for Lustre's `server components`.
+- [x] Support for `lustre.component` constructor.
+- [x] Support for Lustre's `server components`.
 - [ ] Support for [`LiveJson`](https://github.com/Miserlou/live_json).
