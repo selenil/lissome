@@ -1,5 +1,5 @@
 import { Error, Ok } from "./gleam.mjs";
-import { ElementNotFound } from "./lissome.mjs";
+import { ElementNotFound } from "./glissome.mjs";
 
 export function getElementTextById(id) {
   const element = document.getElementById(id);

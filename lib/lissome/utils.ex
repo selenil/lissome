@@ -5,7 +5,7 @@ defmodule Lissome.Utils do
     if @gleam_dir && File.exists?(@gleam_dir) do
       case System.cmd(
              "gleam",
-             ~W(export package-information --out /dev/stdout),
+             ~W(export package-information),
              cd: @gleam_dir,
              stderr_to_stdout: true
            ) do

@@ -52,7 +52,7 @@ pub fn get_flags(
   }
 }
 
-@external(javascript, "./lissome_ffi.mjs", "getElementTextById")
+@external(javascript, "./glissome_ffi.mjs", "getElementTextById")
 fn get_element_text_by_id(_id: String) -> Result(String, Error) {
   Error(NotABrowser)
 }
